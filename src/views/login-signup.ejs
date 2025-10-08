@@ -1,0 +1,171 @@
+<%- include('includes/header') %>
+
+<link rel="stylesheet" type="text/css" href="/css/signuplogin.css" />
+
+<body  style="background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+  animation: gradient 15s ease infinite;
+  -webkit-animation: gradient 15s ease infinite;
+  background-size: 200% 200%;">
+
+  <br>
+<br>
+    <div class="cont">
+      <form action="/admin/login" METHOD="POST">
+        <div class="form sign-in">
+            <h2>Welcome</h2>
+            <label>
+                <span>Mobileshop *</span>
+                          <input
+            type="text"
+            name="memberNick"
+            placeholder="Username"
+            value=""
+            required
+          />
+            </label>
+            <label>
+                <span>Password *</span>          
+                <input
+            type="password"
+            name="memberPassword"
+            class="member-passwordLog"
+            placeholder="Password"
+            value=""
+            required
+          />
+            </label>
+        <!--  <p class="forgot-pass">Forgot password?</p>--> 
+            <button  name="login" type="submit" class="submit">Sign In</button>
+            <div style="text-align: center;">Go back <a href="/admin" style="color: #6440fb">Home</a></div>
+         
+        </div>
+        </form>
+        <div class="sub-cont">
+            <div class="img">
+                <div class="img__text m--up">
+                 
+                    <h3>Don't have an account? Please Sign up!<h3>
+                </div>
+                <div class="img__text m--in">
+                
+                    <h3>If you already has an account, just sign in.<h3>
+                      
+                       <img class="upload-img-frame" style="margin-top: 120%;" width="50%" src="/img/user.png" />
+                
+                      </div>
+                <div class="img__btn">
+                    <span class="m--up">Sign Up</span>
+                    <span class="m--in">Sign In</span>
+                </div>
+            </div>
+            <form
+      onsubmit="return validateSignupForm()"
+      action="/admin/signup"
+      method="POST"
+      enctype="multipart/form-data"
+    >
+            <div class="form sign-up">
+                <h2>Create your Account</h2>
+                <label>
+                    <span>Mobileshop username *</span>
+                    <input
+              type="text"
+              name="memberNick"
+              class="member-nick"
+              placeholder="Username"
+              value=""
+            />
+                </label>
+                <label>
+                    <span>Phone number *</span> 
+                    <input
+              type="text"
+              name="memberPhone"
+              class="member-phone"
+              placeholder="Phone"
+              value=""
+            />
+                </label>
+                <label>
+                    <span>Password *</span>
+                    <input
+              type="password"
+              name="memberPassword"
+              class="member-password"
+              placeholder="Password"
+              value=""
+            />
+                </label>
+                <label>
+                    <span>Repeat Password *</span>
+                    <input
+              type="password"
+              name="confirmPassword"
+              class="confirm-password"
+              placeholder="Repeat password"
+              value=""
+            />
+                </label>
+                
+            <input name="memberType" value="MOBILESHOP" hidden />
+                <style>
+                  input[type="file"] {
+  display: none;
+}
+
+.file-input-label {
+  border: 1px solid #ccc;
+  display: flex;
+  background-color: #23a6d5;
+  width: 126px;
+  border-radius: 8px;
+  text-align: center;
+  padding: 6px 12px;
+  cursor: pointer;
+}
+                </style>       
+<label><span>Admin image</span></label>
+              <div  class="file-box bs3-primary preview-image"><input
+                  class="upload-name"
+                  value="Choose image"
+                  disabled="disabled"
+                />                
+<label for="input-file" 
+class="file-input-label" 
+style="align-content: center;"
+                  >
+            Upload Image</label
+                >
+                <input
+                  type="file"
+                  id="input-file"
+                  class="upload-hidden form-control-file member-image"
+                  name="memberImage"
+                /></div>
+              <p style="text-align: center;">
+                Please upload admin image.<br />
+                Attention only:.jpg, .jpeg, or .png. <br />
+                formats allowed!
+              </p>  
+              
+              
+        <input name="memberType" value="MOBILESHOP" hidden />
+
+            <button type="submit" name="signup" class="submit">Sign Up</button>
+                
+            </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        document.querySelector('.img__btn').addEventListener('click', function() {
+            document.querySelector('.cont').classList.toggle('s--signup');
+        });
+    </script>
+
+    
+  <script type="text/javascript" src="/js/signup.js"></script>
+</body>
+
+<%- include('includes/footer') %>

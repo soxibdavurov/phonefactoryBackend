@@ -1,44 +1,54 @@
 import express from "express";
 const routerAdmin = express.Router();
-import restaurantController from './controllers/restaurant.controller';
+import mobileshopController from "./controllers/mobileshop.controller";
 import productController from "./controllers/product.controller";
-import makeUploader  from "./libs/utils/uploader";
+import makeUploader from "./libs/utils/uploader";
 
-/** Restaurant */
-routerAdmin.get("/", restaurantController.goHome);
+/** Mobileshop */
+routerAdmin.get("/", mobileshopController.goHome);
 routerAdmin
-.get("/login", restaurantController.getLogin)
-.post("/login", restaurantController.processLogin);
+  .get("/login", mobileshopController.getLogin)
+  .post("/login", mobileshopController.processLogin);
 
 routerAdmin
-.get("/signup", restaurantController.getSignup)
-.post("/signup",
+  .get("/login-signup", mobileshopController.getSignup)
+  .post(
+    "/signup",
     makeUploader("members").single("memberImage"),
-    restaurantController.processSignup);
-routerAdmin.get("/logout", restaurantController.logout);
-routerAdmin.get("/checkme", restaurantController.checkAuthSession);
-
+    mobileshopController.processSignup
+  );
+routerAdmin.get("/logout", mobileshopController.logout);
+routerAdmin.get("/checkme", mobileshopController.checkAuthSession);
 
 /** Product */
-routerAdmin.get("/product/all", 
-restaurantController.verifyRestaurant,
-productController.getAllProducts
+routerAdmin.get(
+  "/product/all",
+  mobileshopController.verifyMobileshop,
+  productController.getAllProducts
 );
-routerAdmin.post("/product/create",
-    restaurantController.verifyRestaurant,
-    makeUploader("products").array("productImages", 5),
-    // makeUploader.single("productImage"),
-    productController.createNewProduct);
-routerAdmin.post("/product/:id", 
-    restaurantController.verifyRestaurant,
-    productController.updateChosenProduct);
+routerAdmin.post(
+  "/product/create",
+  mobileshopController.verifyMobileshop,
+  makeUploader("products").array("productImages", 5),
+  // makeUploader.single("productImage"),
+  productController.createNewProduct
+);
+routerAdmin.post(
+  "/product/:id",
+  mobileshopController.verifyMobileshop,
+  productController.updateChosenProduct
+);
 
 /** User */
-routerAdmin.get("/user/all", 
-    restaurantController.verifyRestaurant,
-    restaurantController.getUsers);
-routerAdmin.post("/user/edit", 
-    restaurantController.verifyRestaurant,
-    restaurantController.updateChosenUser);
+routerAdmin.get(
+  "/user/all",
+  mobileshopController.verifyMobileshop,
+  mobileshopController.getUsers
+);
+routerAdmin.post(
+  "/user/edit",
+  mobileshopController.verifyMobileshop,
+  mobileshopController.updateChosenUser
+);
 
 export default routerAdmin;
