@@ -5,7 +5,7 @@ import productController from "./controllers/product.controller";
 import makeUploader from "./libs/utils/uploader";
 
 /** Mobileshop */
-routerAdmin.get("/", mobileshopController.goHome);
+routerAdmin.get("/home", mobileshopController.goHome);
 routerAdmin
   .get("/login", mobileshopController.getLogin)
   .post("/login", mobileshopController.processLogin);
@@ -19,6 +19,7 @@ routerAdmin
   );
 routerAdmin.get("/logout", mobileshopController.logout);
 routerAdmin.get("/checkme", mobileshopController.checkAuthSession);
+routerAdmin.get("/create-user");
 
 /** Product */
 routerAdmin.get(
@@ -41,7 +42,7 @@ routerAdmin.post(
 
 /** User */
 routerAdmin.get(
-  "/user/all",
+  "/user/barcha",
   mobileshopController.verifyMobileshop,
   mobileshopController.getUsers
 );

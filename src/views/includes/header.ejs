@@ -1,36 +1,147 @@
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <title>PhoneFactory</title>
-    <meta charset="UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <link rel="icon" type="image/png" href="/img/favicon.png" />
-    <link
-      rel="stylesheet"
-      href="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/css/bootstrap.min.css"
-      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
-      crossorigin="anonymous"
-    />
-    <link rel="stylesheet" type="text/css" href="/css/main.css" />
-    <script
-      src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
-      integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
-      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
-      crossorigin="anonymous"
-    ></script>
-    <script
-      src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
-      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
-      crossorigin="anonymous"
-    ></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
-    <script src="/js/main.js"></script>
-  </head>
-</html>
+<head>
+  <title>PhoneFactory</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-UA-Compatible" content="ie=edge" />
+
+  <link rel="icon" type="image/png" href="/img/favicon.png" />
+  <link rel="stylesheet" href="/assets/css/demo/style.css" />
+  <script src="/js/main.js"></script>
+  <script src="https://code.jquery.com/jquery-3.2.1.slim.min.js"
+    integrity="sha384-KJ3o2DKtIkvYIK3UENzmM7KCkRr/rE9/Qpg6aAZGJwFDMVNA/GpGFF93hXpG5KkN"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/popper.js@1.12.9/dist/umd/popper.min.js"
+    integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+    crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.0.0/dist/js/bootstrap.min.js"
+    integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+    crossorigin="anonymous"></script>
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+  <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+</head>
+
+<body>
+  <div class="body-wrapper">
+    <!-- partial:../../partials/_sidebar.html -->
+    <aside class="mdc-drawer mdc-drawer--dismissible mdc-drawer--open">
+      <div class="mdc-drawer__header">
+        <a href="/admin/home" class="brand-logo">
+          <img width="80%" src="../../../assets/images/logo.png" alt="logo" />
+        </a>
+      </div>
+      <div class="mdc-drawer__content">
+        <% if(member) { %>
+          <div class="user-info">
+            <p class="name">Assalomu alaykum, Sohibjon</p>
+            <p class="email">phonefactory9031@gmail.com</p>
+          </div>
+          <% } %>
+            <div class="mdc-list-group">
+              <nav class="mdc-list mdc-drawer-menu">
+                <div class="mdc-list-item mdc-drawer-item">
+                  <a class="mdc-drawer-link" href="/admin/home">
+                    <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
+                      aria-hidden="true">home</i>
+                    Home
+                  </a>
+                </div>
+                <% if(!member) { %>
+                  <div class="mdc-list-item mdc-drawer-item">
+                    <a class="mdc-drawer-link" href="/admin/login-signup/">
+                      <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
+                        aria-hidden="true">pie_chart_outlined</i>
+                      Login or signup
+                    </a>
+                  </div>
+                  <% } else { %>
+                    <div class="mdc-list-item mdc-drawer-item">
+                      <a class="mdc-expansion-panel-link" href="#" data-toggle="expansionPanel"
+                        data-target="ui-sub-menu">
+                        <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
+                          aria-hidden="true">dashboard</i>
+                        Datas
+                        <i class="mdc-drawer-arrow material-icons">chevron_right</i>
+                      </a>
+                      <div class="mdc-expansion-panel" id="ui-sub-menu">
+                        <nav class="mdc-list mdc-drawer-submenu">
+                          <div class="mdc-list-item mdc-drawer-item">
+                            <a class="mdc-drawer-link" href="/admin/product/all"><i
+                                class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
+                                aria-hidden="true">grid_on</i>
+                              Products
+
+                            </a>
+                          </div>
+                          <div class="mdc-list-item mdc-drawer-item">
+                            <a class="mdc-drawer-link" href="/admin/user/barcha">
+                              <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
+                                aria-hidden="true">grid_on</i>
+                              Users
+                            </a>
+                          </div>
+                          <div class="mdc-list-item mdc-drawer-item">
+                            <a class="mdc-drawer-link" href="/admin/products/add">
+                              <i class="material-icons mdc-button__icon__start-detail mdc-drawer-item-icon">add</i>
+                              Add product
+                            </a>
+                          </div>
+                        </nav>
+                      </div>
+                    </div>
+
+              </nav>
+            </div>
+            <div class="profile-actions">
+              <a href="javascript:;">Settings</a>
+              <span class="divider"></span>
+              <a onclick="return confirm('Do you want to logout?')" href="/admin/logout">Logout</a>
+            </div>
+            <% } %>
+      </div>
+    </aside>
+    <!-- partial -->
+    <div class="main-wrapper mdc-drawer-app-content">
+      <!-- partial:../../partials/_navbar.html -->
+      <header class="mdc-top-app-bar">
+        <div class="mdc-top-app-bar__row">
+          <% if(member) { %>
+            <div class="mdc-top-app-bar__section mdc-top-app-bar__section--align-start">
+              <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button sidebar-toggler">
+                menu
+              </button>
+              <span class="mdc-top-app-bar__title">Greetings Sajangnim!</span>
+
+            </div>
+
+            <div class="mdc-top-app-bar__section mdc-top-app-bar__section--align-end mdc-top-app-bar__section-right">
+              <div class="menu-button-container menu-profile d-none d-md-block">
+                <button class="mdc-button mdc-menu-button">
+                  <span class="d-flex align-items-center">
+                    <span class="figure">
+                      <img src="../../../assets/images/faces/face1.jpg" alt="user" class="user" />
+                    </span>
+                    <span class="user-name">Sohibjon</span>
+                  </span>
+                </button>
+                <div class="mdc-menu mdc-menu-surface" tabindex="-1">
+                  <ul class="mdc-list" role="menu" aria-hidden="true" aria-orientation="vertical">
+
+                    <li class="mdc-list-item" role="menuitem">
+                      <div class="item-thumbnail item-thumbnail-icon-only">
+                        <i class="mdi mdi-settings-outline text-primary"></i>
+                      </div>
+                      <div class="item-content d-flex align-items-start flex-column justify-content-center">
+                        <a onclick="return confirm('Do you want to logout?')" href="/admin/logout">
+                          <h6 class="item-subject font-weight-normal">Logout</h6>
+                        </a>
+                      </div>
+                    </li>
+                  </ul>
+                </div>
+              </div>
+              <% } %>
+            </div>
+      </header>

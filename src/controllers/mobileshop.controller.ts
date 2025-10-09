@@ -18,7 +18,7 @@ mobileshopController.goHome = (req: Request, res: Response) => {
     // send | json | redirect | end | render
   } catch (err) {
     console.log("Error, goHome", err);
-    res.redirect("/admin");
+    res.redirect("/admin/home");
   }
 };
 
@@ -38,7 +38,7 @@ mobileshopController.getLogin = (req: Request, res: Response) => {
     res.render("login");
   } catch (err) {
     console.log("Error, on login", err);
-    res.redirect("/admin");
+    res.redirect("/admin/home");
   }
 };
 
@@ -83,13 +83,13 @@ mobileshopController.processLogin = async (
 
     req.session.member = result;
     req.session.save(function () {
-      res.redirect("/admin/product/all");
+      res.redirect("/admin/home");
     });
   } catch (err) {
     console.log("Error, processLogin", err);
     const message = err instanceof Errors ? err.message : Message.SMT_WENT_WR;
     res.send(
-      `<script>alert("${message}"); window.location.replace('/admin/login')</script>`
+      `<script>alert("${message}"); window.location.replace('/admin/login-signup')</script>`
     );
   }
 };
@@ -102,7 +102,7 @@ mobileshopController.getUsers = async (req: Request, res: Response) => {
     res.render("users", { users: result });
   } catch (err) {
     console.log("Error, getUsers", err);
-    res.redirect("/admin/login");
+    res.redirect("/admin/login-signup");
   }
 };
 
@@ -138,11 +138,11 @@ mobileshopController.logout = async (req: AdminRequest, res: Response) => {
   try {
     console.log("logout");
     req.session.destroy(function () {
-      res.redirect("/admin");
+      res.redirect("/admin/home");
     });
   } catch (err) {
     console.log("Error, logout", err);
-    res.redirect("/admin");
+    res.redirect("/admin/home");
   }
 };
 
@@ -157,7 +157,7 @@ mobileshopController.verifyMobileshop = (
   } else {
     const message = Message.NOT_AUTHENTICATED;
     res.send(
-      `<script>alert("${message}"); window.location.replace('/admin/login');</script>`
+      `<script>alert("${message}"); window.location.replace('/admin/login-signup');</script>`
     );
   }
 };
