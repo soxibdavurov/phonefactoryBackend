@@ -32,7 +32,9 @@ class ProductService {
         if (inquiry.productCollection)
             match.productCollection = inquiry.productCollection;
         if (inquiry.productBrand)
-            match.productBrand = inquiry.productBrand;
+            match.productBrand = {
+                $regex: new RegExp(`^${inquiry.productBrand}$`, "i"), // "i" = case-insensitive
+            };
         if (inquiry.search) {
             match.productName = { $regex: new RegExp(inquiry.search, "i") };
         }

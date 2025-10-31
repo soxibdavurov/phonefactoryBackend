@@ -37,7 +37,6 @@ export enum ProductCollection {
   SMARTPHONE = "SMARTPHONE",
   TABLET = "TABLET",
   TARIFF = "TARIFF",
-  ACCESSORY = "ACCESSORY",
   AUDIO = "AUDIO",
   WEARABLE = "WEARABLE",
   CHARGER = "CHARGER",

@@ -1,41 +1,44 @@
-import {Request, Response} from "express";
+import { Request, Response } from "express";
 import Errors, { HttpCode, Message } from "../libs/Errors";
-import {T} from "../libs/types/common"
+import { T } from "../libs/types/common"
 import ProductService from "../models/Product.service";
 import { ProductInput, ProductInquiry } from "../libs/types/product";
 import { AdminRequest, ExtendedRequest } from "../libs/types/member";
-import { ProductCollection } from "../libs/enums/products.enum";
+import { ProductBrand, ProductCollection } from "../libs/enums/products.enum";
 
 const productService = new ProductService;
 
-const productController: T ={};
+const productController: T = {};
 
-    /** SPA */
-productController.getProducts = async(req: Request, res:Response) => {
-   try {
+/** SPA */
+productController.getProducts = async (req: Request, res: Response) => {
+    try {
         console.log('getProducts');
 
-        const {page, limit, order, productCollection,search} = req.query;
+        const { page, limit, order, productCollection, productBrand, search } = req.query;
         const inquiry: ProductInquiry = {
             order: String(order),
             page: Number(page),
             limit: Number(limit),
         };
-        if(productCollection) 
+        if (productCollection)
             inquiry.productCollection = productCollection as ProductCollection;
-        if(search) inquiry.search = String(search);
+        if (productBrand)
+            inquiry.productBrand = productBrand as ProductBrand;
+        if (search) inquiry.search = String(search);
 
         const result = await productService.getProducts(inquiry);
 
         res.status(HttpCode.OK).json(result);
     } catch (err) {
         console.log("Error, getProducts", err);
-        if(err instanceof Errors) res.status(err.code).json(err);
+        if (err instanceof Errors) res.status(err.code).json(err);
         else res.status(Errors.standard.code).json(Errors.standard);
         //res.json({ });
-    }    };
+    }
+};
 
-productController.getProduct = async(req: ExtendedRequest, res: Response) => {
+productController.getProduct = async (req: ExtendedRequest, res: Response) => {
     try {
         console.log('getProduct');
         const { id } = req.params;
@@ -45,13 +48,13 @@ productController.getProduct = async(req: ExtendedRequest, res: Response) => {
         res.status(HttpCode.OK).json(result);
     } catch (err) {
         console.log("Error, getProduct", err);
-        if(err instanceof Errors) res.status(err.code).json(err);
+        if (err instanceof Errors) res.status(err.code).json(err);
         else res.status(Errors.standard.code).json(Errors.standard);
         //res.json({ });
-    }    
+    }
 };
 
-    /** SSR */
+/** SSR */
 
 productController.getAllProducts = async (req: AdminRequest, res: Response) => {
     try {
@@ -59,13 +62,13 @@ productController.getAllProducts = async (req: AdminRequest, res: Response) => {
         const data = await productService.getAllProducts();
         console.log("data:", data);
 
-        res.render("products", {products: data});
+        res.render("products", { products: data });
     } catch (err) {
         console.log("Error, getAllProducts", err);
-        if(err instanceof Errors) res.status(err.code).json(err);
+        if (err instanceof Errors) res.status(err.code).json(err);
         else res.status(Errors.standard.code).json(Errors.standard);
         //res.json({ });
-    }    
+    }
 };
 
 productController.createNewProduct = async (req: AdminRequest, res: Response) => {
@@ -73,7 +76,7 @@ productController.createNewProduct = async (req: AdminRequest, res: Response) =>
         console.log('createNewProduct');
         console.log(req.files);
 
-        if(!req.files?.length) 
+        if (!req.files?.length)
             throw new Errors(HttpCode.INTERNAL_SERVER_ERROR, Message.CR_FAIL);
 
         const data: ProductInput = req.body;
@@ -87,25 +90,25 @@ productController.createNewProduct = async (req: AdminRequest, res: Response) =>
 
     } catch (err) {
         console.log("Error, createNewProduct", err);
-        const message = 
-            err instanceof Errors? err.message:Message.SMT_WENT_WR;
-       res.send(`<script>alert("${message}"); window.location.replace('/admin/product/all');</script>`);
-            }    
+        const message =
+            err instanceof Errors ? err.message : Message.SMT_WENT_WR;
+        res.send(`<script>alert("${message}"); window.location.replace('/admin/product/all');</script>`);
+    }
 };
 
 productController.updateChosenProduct = async (req: Request, res: Response) => {
     try {
         console.log('updateChosenProduct');
         const id = req.params.id;
- 
+
         const result = await productService.updateChosenProduct(id, req.body);
-        res.status(HttpCode.OK).json({data: result});
+        res.status(HttpCode.OK).json({ data: result });
     } catch (err) {
         console.log("Error, updateChosenProduct", err);
-        if(err instanceof Errors) res.status(err.code).json(err);
+        if (err instanceof Errors) res.status(err.code).json(err);
         else res.status(Errors.standard.code).json(Errors.standard);
         //res.json({ });
-    }    
+    }
 };
 
 export default productController;
