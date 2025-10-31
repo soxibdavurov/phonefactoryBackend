@@ -17,9 +17,9 @@
                         <th style="text-align: center;">T/r</th>
                         <th style="text-align: center;">Product Name</th>
                         <th style="text-align: center;">Product Type</th>
-                        <th style="text-align: center;">Product Volume</th>
+                        <th style="text-align: center;">Product size/volume</th>
                         <th style="text-align: center;">Product Price</th>
-                        <th style="text-align: center;">Product Left Count</th>
+                        <th style="text-align: center;">Product Photo</th>
                         <th style="text-align: center;">Status</th>
                       </tr>
                     </thead>
@@ -38,13 +38,23 @@
                             <%= value.productCollection %>
                           </td>
                           <td style="text-align: center;">
-                            <%= value.productCollection==='TARIFF' ? value.TariffType: value.productSize %>
+                            <%= value.productCollection==='TARIFF' ? value.tariffType: value.productSize %>
                           </td>
                           <td style="text-align: center;">
-                            <%= value.productPrice %>
+
+                            <% if (value.productDiscount> 0) { %>
+                              <s>
+                                <%= value.productPrice %>
+                              </s><br /><br />
+                              <%= value.productPrice-value.productDiscount %>
+                                <% } else { %>
+                                  <%= value.productPrice %>
+                                    <% } %>
                           </td>
                           <td style="text-align: center;">
-                            <%= value.productLeftCount %>
+                            <img src="http://localhost:3004/<%= value.productImages[0] %>"
+                              style="width: 100px; height: 50px; object-fit: cover;" />
+
                           </td>
                           <td style="text-align: center;">
                             <select class="spec-select new-product-status" id="<%= value._id %>">

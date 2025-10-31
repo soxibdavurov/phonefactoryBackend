@@ -11,10 +11,21 @@
                   <div class="long-input">
                     <span class="new-dish-txt">NEW PRODUCT DETAIL</span>
                   </div>
-                  <div class="login-input-frame">
-                    <div class="long-input">
+                  <div class="half-input-frame">
+                    <div class="half-input">
                       <label>Product Name</label>
                       <input type="text" placeholder="Name" name="productName" class="product-name" />
+                    </div>
+                    <div class="half-input">
+                      <label>Product Left Counts</label>
+                      <input type="number" value="100" placeholder="Counts" name="productLeftCount"
+                        class="product-left-count" />
+                    </div>
+                    <div class="half-input">
+                      <label>Check if you want to show as New</label>
+                      <input type="checkbox" name="isNew" value="true" />
+
+
                     </div>
                     <input name="productStatus" value="PAUSE" class="product-status" hidden />
                   </div>
@@ -24,36 +35,47 @@
                       <input type="number" placeholder="Price" name="productPrice" class="product-price" />
                     </div>
                     <div class="half-input">
-                      <label>Product Left Counts</label>
-                      <input type="number" value="100" placeholder="Counts" name="productLeftCount"
-                        class="product-left-count" />
+                      <label>Product Discount in ₩</label>
+                      <input type="number" placeholder="Discount" name="productDiscount" class="productDiscount" />
                     </div>
+
                   </div>
                   <div class="half-input-frame">
                     <div class="half-input">
                       <label>Product Type</label>
                       <select class="product-collection" name="productCollection">
-                        <option value="SMARTPHONE" selected>SMARTPHONE</option>
-                        <option value="ACCESSORY">ACCESSORY</option>
+                        <option value="">Select product type</option>
+                        <option value="SMARTPHONE">SMARTPHONE</option>
                         <option value="TABLET">TABLET</option>
+                        <option value="ACCESSORY">ACCESSORY</option>
                         <option value="TARIFF">TARIFF</option>
-                        <option value="WEARABLE">WEARABLE</option>
                         <option value="AUDIO">AUDIO</option>
+                        <option value="WEARABLE">WEARABLE</option>
                         <option value="CHARGER">CHARGER</option>
                         <option value="CASE">CASE</option>
                         <option value="SCREEN_PROTECTOR">SCREEN_PROTECTOR</option>
-                        <option value="OTHER">Other</option>
+                        <option value="OTHER">OTHER</option>
+                      </select>
+                    </div>
+                    <div class="half-input" id="brand" style="display: none">
+                      <label>Brand/Company</label>
+                      <select class="product-collection" name="productBrand">
+                        <option value="OTHER">OTHER</option>
+                        <option value="SAMSUNG">SAMSUNG</option>
+                        <option value="IPHONE">IPHONE</option>
+                        <option value="LGU">LgU+</option>
+                        <option value="KT">KT</option>
+                        <option value="SKT">SKT</option>
                       </select>
                     </div>
 
-                    <div class="half-input" id="product-collection">
-                      <label>Product Size</label>
-                      <select class="product-size" name="productSize">
-                        <option value="SMALL">Small</option>
+                    <div class="half-input" id="size-collection" style="display: none">
+                      <label>Product Storage/Size</label>
+                      <select class="size-collection" name="productSize">
+                        <option value="">Choose</option>
                         <option value="NORMAL">Normal</option>
-                        <option value="BIG">Big</option>
-                        <option value="SET">Set</option>
-                        <option value="32GB" selected>32GB</option>
+                        <option value="16GB">16</option>
+                        <option value="32GB">32GB</option>
                         <option value="64GB">64GB</option>
                         <option value="128GB">128GB</option>
                         <option value="256GB">256GB</option>
@@ -65,7 +87,8 @@
                     <div class="half-input" id="tariff-type" style="display: none">
                       <label>Tariff type</label>
                       <select class="product-volume" name="tariffType">
-                        <option value="PREPAID" selected>PREPAID</option>
+                        <option value=""></option>
+                        <option value="PREPAID">PREPAID</option>
                         <option value="POSTPAID">POSTPAID</option>
                         <option value="ROAMING">ROAMING</option>
                         <option value="STUDENT">STUDENT</option>

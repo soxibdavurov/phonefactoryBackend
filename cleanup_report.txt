@@ -1,0 +1,75 @@
+# Cleanup Report
+
+## Unused assets removed:
+
+- src/public/assets/images/dashboard/Slack.png
+- src/public/assets/images/dashboard/dropbox.png
+- src/public/assets/images/dashboard/evernote.png
+- src/public/assets/images/dashboard/image_1.jpg
+- src/public/assets/images/dashboard/image_2.jpg
+- src/public/assets/images/dashboard/image_3.jpg
+- src/public/assets/images/dashboard/image_4.jpg
+- src/public/assets/images/dashboard/image_5.jpg
+- src/public/assets/images/dashboard/image_6.jpg
+- src/public/assets/images/dashboard/skype.png
+- src/public/assets/images/faces/face10.jpg
+- src/public/assets/images/faces/face2.jpg
+- src/public/assets/images/faces/face3.jpg
+- src/public/assets/images/faces/face4.jpg
+- src/public/assets/images/faces/face5.jpg
+- src/public/assets/images/faces/face6.jpg
+- src/public/assets/images/faces/face7.jpg
+- src/public/assets/images/faces/face8.jpg
+- src/public/assets/images/faces/face9.jpg
+- src/public/assets/images/logo.svg
+- src/public/assets/vendors/material-design-icons/iconfont/MaterialIcons-Regular.svg
+
+## Orphan CSS/SCSS removed (not referenced anywhere):
+
+- src/public/assets/scss/demo/_dashboard.scss
+- src/public/assets/scss/demo/_footer.scss
+- src/public/assets/scss/demo/_layout.scss
+- src/public/assets/scss/demo/_navbar.scss
+- src/public/assets/scss/demo/_sidebar.scss
+- src/public/assets/scss/demo/_variables.scss
+- src/public/assets/scss/demo/style.scss
+- src/public/assets/scss/shared/_demo.scss
+- src/public/assets/scss/shared/_fonts.scss
+- src/public/assets/scss/shared/_functions.scss
+- src/public/assets/scss/shared/_reset.scss
+- src/public/assets/scss/shared/_theme.scss
+- src/public/assets/scss/shared/_typography.scss
+- src/public/assets/scss/shared/_utilities.scss
+- src/public/assets/scss/shared/components/_buttons.scss
+- src/public/assets/scss/shared/components/_cards.scss
+- src/public/assets/scss/shared/components/_checkbox.scss
+- src/public/assets/scss/shared/components/_forms.scss
+- src/public/assets/scss/shared/components/_menu.scss
+- src/public/assets/scss/shared/components/_select.scss
+- src/public/assets/scss/shared/components/_switch.scss
+- src/public/assets/scss/shared/components/_tables.scss
+- src/public/assets/scss/shared/components/_tabs.scss
+- src/public/assets/scss/shared/components/_textfield.scss
+- src/public/assets/scss/shared/components/plugin-overides/_code-mirror.scss
+- src/public/assets/scss/shared/mixins/_buttons.scss
+- src/public/assets/scss/shared/mixins/_color.scss
+- src/public/assets/scss/shared/sample-screens/_auth.scss
+- src/public/assets/scss/shared/sample-screens/_error.scss
+- src/public/assets/scss/vertical/_vertical-wrapper.scss
+- src/public/assets/vendors/codemirror/codemirror.css
+- src/public/assets/vendors/codemirror/dracula.css
+- src/public/assets/vendors/css/vendor.bundle.base.css
+- src/public/assets/vendors/flag-icon-css/css/flag-icon.min.css
+- src/public/assets/vendors/jvectormap/jquery-jvectormap.css
+- src/public/assets/vendors/material-design-icons/iconfont/material-icons.css
+- src/public/assets/vendors/mdi/css/materialdesignicons.min.css
+- src/public/css/home.css
+- src/public/css/main.css
+
+## Purged CSS rules in referenced styles:
+
+- src/public/css/signuplogin.css (rules removed)
+- src/public/css/login.css (rules removed)
+- src/public/css/users.css (rules removed)
+- src/public/assets/css/demo/style.css (rules removed)
+- src/public/css/style.css (rules removed)

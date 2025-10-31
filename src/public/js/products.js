@@ -3,14 +3,30 @@ console.log("Products frontend javascript file");
 $(function () {
   $(".product-collection").on("change", () => {
     const selectedValue = $(".product-collection").val();
+    if (selectedValue === "SMARTPHONE" || "TABLET") {
+      $("#brand").show();
+      $("#size-collection").show();
+    }
+    else {
+      $("#brand").hide();
+      $("#size-collection").hide();
+    }
     if (selectedValue === "TARIFF") {
-      $("#product-collection").hide();
+      $("#size-collection").hide();
       $("#tariff-type").show();
     } else {
       $("#tariff-type").hide();
-      $("#product-collection").show();
     }
-  });
+
+    // if (selectedValue === "ACCESSORY") {
+    //   $("#size-collection").hide();
+    //   $("#accessory").show();
+    //   $("#brand").show();
+    // } else {
+    //   $("#accessory").hide();
+    // }
+  }
+  );
 
   // $("#process-btn").on("click", () => {
   //   $(".dish-container").slideToggle(500);
@@ -51,6 +67,7 @@ function validateForm() {
   const productCollection = $(".product-collection").val();
   const productDesc = $(".product-desc").val();
   const productStatus = $(".product-status").val();
+  const productBrand = $(".product-status").val();
 
   if (
     productName == "" ||
@@ -58,7 +75,8 @@ function validateForm() {
     productLeftCount == "" ||
     productCollection == "" ||
     productDesc == "" ||
-    productStatus == ""
+    productStatus == "" ||
+    productBrand == ""
   ) {
     alert("Please insert all required details!");
     return false;
