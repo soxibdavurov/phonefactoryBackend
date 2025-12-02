@@ -7,7 +7,7 @@ export enum ProductSize {
   GB_256 = "256GB",
   GB_512 = "512GB",
   TB_1 = "1TB",
-  OTHER = "Other",
+  OTHER = "OTHER",
 }
 
 export enum TariffType {
