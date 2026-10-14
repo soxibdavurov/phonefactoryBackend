@@ -11,6 +11,27 @@ const BASE = process.env.TEST_URL || "http://127.0.0.1:3999";
 const MODE = process.env.MODE || "baseline";
 const OUT = path.join(__dirname, `perf-${MODE}.json`);
 
+// Perf uchun HAQIQIY (to'g'ri parolli) hisob: login muvaffaqiyatli bo'ladi,
+// shuning uchun rate-limiter (skipSuccessfulRequests) uni bloklamaydi va biz
+// ikkala rejimda ham login yo'lining sof overhead'ini o'lchaymiz.
+const PERF_USER = {
+  memberNick: "perfuser",
+  memberPhone: "01099990000",
+  memberPassword: "perfpass1234",
+};
+
+async function ensurePerfUser() {
+  try {
+    await fetch(BASE + "/member/signup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify(PERF_USER),
+    });
+  } catch (_) {
+    // allaqachon mavjud bo'lsa yoki boshqa holatda — login baribir ishlaydi
+  }
+}
+
 function bench(title, opts) {
   return new Promise((resolve, reject) => {
     autocannon(
@@ -31,12 +52,18 @@ function bench(title, opts) {
 async function main() {
   const out = { mode: MODE, generatedAt: new Date().toISOString(), benchmarks: [] };
 
-  // 로그인 API (존재하지 않는 계정 — bcrypt 비교까지 포함)
+  // To'g'ri parolli hisob tayyorlanadi (login muvaffaqiyatli = rate-limit bloklamaydi)
+  await ensurePerfUser();
+
+  // 로그인 API (유효 계정 — bcrypt 비교 포함, 두 모드 동일 경로)
   out.benchmarks.push(
     await bench("login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ memberNick: "benchuser", memberPassword: "whatever123" }),
+      body: JSON.stringify({
+        memberNick: PERF_USER.memberNick,
+        memberPassword: PERF_USER.memberPassword,
+      }),
     })
   );
 
