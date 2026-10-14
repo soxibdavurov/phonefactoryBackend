@@ -81,9 +81,12 @@ mobileshopController.processLogin = async (
     const result = await memberService.processLogin(input);
     //TODO SESSIONS AUTHENTIACTION
 
-    req.session.member = result;
-    req.session.save(function () {
-      res.redirect("/admin/home");
+    // Session fixation oldini olish uchun login'dan keyin yangi sessiya ID
+    req.session.regenerate(function () {
+      req.session.member = result;
+      req.session.save(function () {
+        res.redirect("/admin/home");
+      });
     });
   } catch (err) {
     console.log("Error, processLogin", err);
