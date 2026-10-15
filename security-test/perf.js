@@ -32,10 +32,12 @@ async function ensurePerfUser() {
   }
 }
 
-function bench(title, opts) {
+// MUHIM: autocannon TO'LIQ url bilan chaqiriladi (alohida `path` opsiyasini
+// autocannon e'tiborsiz qoldiradi va so'rovlar `/` ga ketib 404 bo'ladi).
+function bench(title, pathStr, opts) {
   return new Promise((resolve, reject) => {
     autocannon(
-      { url: BASE, connections: 20, duration: 15, ...opts },
+      { url: BASE + pathStr, connections: 20, duration: 15, ...opts },
       (err, res) => {
         if (err) return reject(err);
         resolve({
@@ -43,6 +45,9 @@ function bench(title, opts) {
           latency_avg_ms: res.latency.average,
           latency_p99_ms: res.latency.p99,
           req_per_sec: res.requests.average,
+          non2xx: res.non2xx,          // 404/4xx/5xx soni — 0 bo'lishi kerak (login/signup 429 bundan mustasno)
+          errors: res.errors,          // ulanish xatolari
+          status_2xx: res["2xx"],
         });
       }
     );
@@ -57,7 +62,7 @@ async function main() {
 
   // 로그인 API (유효 계정 — bcrypt 비교 포함, 두 모드 동일 경로)
   out.benchmarks.push(
-    await bench("login", {
+    await bench("login", "/member/login", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -69,9 +74,8 @@ async function main() {
 
   // 상품 목록 조회 (읽기 경로)
   out.benchmarks.push(
-    await bench("product_list", {
+    await bench("product_list", "/product/all?page=1&limit=10&order=createdAt", {
       method: "GET",
-      path: "/product/all?page=1&limit=10&order=createdAt",
     })
   );
 
@@ -79,7 +83,7 @@ async function main() {
   console.log(`\n[${MODE}] perf natija: ${OUT}`);
   for (const b of out.benchmarks) {
     console.log(
-      `  ${b.title.padEnd(14)} avg=${b.latency_avg_ms}ms p99=${b.latency_p99_ms}ms rps=${Math.round(b.req_per_sec)}`
+      `  ${b.title.padEnd(14)} avg=${b.latency_avg_ms}ms p99=${b.latency_p99_ms}ms rps=${Math.round(b.req_per_sec)} 2xx=${b.status_2xx} non2xx=${b.non2xx} errors=${b.errors}`
     );
   }
 }

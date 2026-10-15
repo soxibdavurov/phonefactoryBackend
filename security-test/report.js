@@ -48,6 +48,14 @@ if (pb && pd) {
       `| ${bench.title} | ${bench.latency_avg_ms} | ${dd.latency_avg_ms} | ${inc} | ${bench.latency_p99_ms} | ${dd.latency_p99_ms} |`
     );
   }
+  // Validlik tekshiruvi: so'rovlar haqiqiy endpoint'ga tushганini ko'rsatadi
+  console.log("\n_(validlik: 2xx/non2xx/errors — login himoyada 429 bo'lishi mumkin, qolgani 0 bo'lsin)_");
+  for (const b of pb.benchmarks) {
+    const dd = pd.benchmarks.find((x) => x.title === b.title) || {};
+    console.log(
+      `- ${b.title}: baseline 2xx=${b.status_2xx} non2xx=${b.non2xx} err=${b.errors} | defended 2xx=${dd.status_2xx} non2xx=${dd.non2xx} err=${dd.errors}`
+    );
+  }
 } else {
   console.log("\n(perf-*.json topilmadi — perf.js ni ishga tushiring)");
 }
