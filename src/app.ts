@@ -9,6 +9,7 @@ import cookieParser from "cookie-parser";
 import session from "express-session";
 import ConnectMongoDB from "connect-mongodb-session";
 import { T } from './libs/types/common';
+import helmet from "helmet";
 
 const MongoDBStore = ConnectMongoDB(session);
 const store = new MongoDBStore({
@@ -23,12 +24,21 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("./uploads"));
 app.use(express.urlencoded({ extended: true })); // Middleware DP -> Traditional API
 app.use(express.json()); //Middleware DP -> RestAPI
+// Faqat ruxsat etilgan frontend manzillari cookie bilan so'rov yubora oladi
+const allowedOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:3000")
+  .split(",")
+  .map((o) => o.trim());
 app.use(
   cors({
     credentials: true,
-    origin: true,
+    origin: (origin, callback) => {
+      if (!origin || allowedOrigins.includes(origin)) callback(null, true);
+      else callback(null, false);
+    },
   })
 );
+// Admin EJS sahifalari inline skriptlardan foydalangani uchun CSP hozircha o'chirilgan
+app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cookieParser());
 app.use(morgan(MORGAN_FORMAT));
 
@@ -37,11 +47,14 @@ app.use(
   session({
     secret: String(process.env.SESSION_SECRET),
     cookie: {
-      maxAge: 1000 * 3600 * 24 // 24h
+      maxAge: 1000 * 3600 * 24, // 24h
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
     },
     store: store,
     resave: true, // 10:30 auth => 13:30 | 12:00 => 15:00
-    saveUninitialized: true
+    saveUninitialized: false
   })
 );
 

@@ -19,6 +19,8 @@ export enum Message {
   NO_MEMBER_NICK = "No member found",
   BLOCKED_USER = "You have been blocked, contact PhoneFactory!",
   WRONG_PASSWORD = "Wrong password, please try again.",
+  WRONG_CREDENTIALS = "Wrong nick or password, please try again.",
+  INVALID_STATUS = "This status change is not allowed.",
   NOT_AUTHENTICATED = "You are not authenticated, please login first.",
   TOKEN_CREATION_FAILED = "Token create failed!",
 }
