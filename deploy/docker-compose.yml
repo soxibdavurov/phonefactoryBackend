@@ -1,0 +1,57 @@
+# PhoneFactory: frontend + backend + MongoDB + Caddy (avtomatik HTTPS)
+#
+# VPS'dagi papka tuzilishi:
+#   ~/phonefactory/
+#     phonefactorybackend/   (git clone)
+#     phonefactory-react/    (git clone)
+#     docker-compose.yml     (shu fayl)
+#     Caddyfile
+#     .env
+
+services:
+  mongo:
+    image: mongo:7
+    restart: unless-stopped
+    volumes:
+      - mongo-data:/data/db
+    # Port tashqariga ochilmaydi: faqat backend ichki tarmoq orqali ulanadi
+
+  backend:
+    build: ./phonefactorybackend
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      PORT: 3004
+    volumes:
+      - uploads:/app/uploads
+    depends_on:
+      - mongo
+
+  frontend:
+    build:
+      context: ./phonefactory-react
+      args:
+        REACT_APP_API_URL: https://api.${DOMAIN}
+    restart: unless-stopped
+
+  caddy:
+    image: caddy:2
+    restart: unless-stopped
+    ports:
+      - "80:80"
+      - "443:443"
+    environment:
+      DOMAIN: ${DOMAIN}
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy-data:/data
+      - caddy-config:/config
+    depends_on:
+      - frontend
+      - backend
+
+volumes:
+  mongo-data:
+  uploads:
+  caddy-data:
+  caddy-config:
