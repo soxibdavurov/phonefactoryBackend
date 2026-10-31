@@ -1,4 +1,7 @@
-# PhoneFactory: frontend + backend + Caddy (avtomatik HTTPS)
+# PhoneFactory: frontend + backend (+ ixtiyoriy Caddy)
+# Serverda Caddy allaqachon 80/443 portlarda ishlayotgan bo'lsa (PM2'dagi caddy-proxy),
+# shu Caddy'ga deploy/Caddyfile'dagi bloklarni qo'shing. Bu compose ichidagi Caddy
+# faqat bo'sh serverda kerak:  docker compose --profile caddy up -d
 # Baza MongoDB Atlas'da: ulanish manzili .env dagi MONGO_URL'da
 #
 # VPS'dagi papka tuzilishi:
@@ -18,6 +21,9 @@ services:
       PORT: 3004
     volumes:
       - uploads:/app/uploads
+    # Faqat serverning o'zidan (127.0.0.1) ochiq: tashqaridan Caddy orqali kiriladi
+    ports:
+      - "127.0.0.1:3004:3004"
 
   frontend:
     build:
@@ -25,9 +31,12 @@ services:
       args:
         REACT_APP_API_URL: https://api.${DOMAIN}
     restart: unless-stopped
+    ports:
+      - "127.0.0.1:3006:80"
 
   caddy:
     image: caddy:2
+    profiles: ["caddy"]
     restart: unless-stopped
     ports:
       - "80:80"

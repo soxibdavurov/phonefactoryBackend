@@ -7,3 +7,15 @@
 api.{$DOMAIN} {
 	reverse_proxy backend:3004
 }
+
+# --- Serverdagi (PM2'dagi) Caddy uchun variant ---
+# Docker tarmog'idan tashqarida konteyner nomlari ko'rinmaydi, shuning uchun
+# portlar orqali ulanadi. Bu bloklarni mavjud Caddyfile'ga qo'shing:
+#
+# phonefactory.uz, www.phonefactory.uz {
+# 	reverse_proxy 127.0.0.1:3006
+# }
+#
+# api.phonefactory.uz {
+# 	reverse_proxy 127.0.0.1:3004
+# }
