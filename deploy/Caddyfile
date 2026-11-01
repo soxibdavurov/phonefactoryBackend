@@ -1,10 +1,12 @@
 # Caddy SSL sertifikatni (Let's Encrypt) o'zi oladi va yangilab turadi
 
 {$DOMAIN}, www.{$DOMAIN} {
+	encode zstd gzip
 	reverse_proxy frontend:80
 }
 
 api.{$DOMAIN} {
+	encode zstd gzip
 	reverse_proxy backend:3004
 }
 

@@ -20,7 +20,8 @@ const store = new MongoDBStore({
 const app = express();
 console.log("__dirname", __dirname);
 app.use(express.static(path.join(__dirname, "public")));
-app.use("/uploads", express.static("./uploads"));
+// Rasm nomlari uuid bilan unikal, shuning uchun brauzer ularni 30 kun keshlasa bo'ladi
+app.use("/uploads", express.static("./uploads", { maxAge: "30d", immutable: true }));
 app.use(express.urlencoded({ extended: true })); // Middleware DP -> Traditional API
 app.use(express.json()); //Middleware DP -> RestAPI
 app.use(
