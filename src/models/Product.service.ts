@@ -1,3 +1,4 @@
+import { escapeRegex } from "../libs/security/escapeRegex";
 import {
     Product,
     ProductInput,
@@ -33,10 +34,10 @@ class ProductService {
             match.productCollection = inquiry.productCollection;
         if (inquiry.productBrand)
             match.productBrand = {
-                $regex: new RegExp(`^${inquiry.productBrand}$`, "i"), // "i" = case-insensitive
+                $regex: new RegExp(`^${escapeRegex(inquiry.productBrand)}$`, "i"), // "i" = case-insensitive
             };
         if (inquiry.search) {
-            match.productName = { $regex: new RegExp(inquiry.search, "i") };
+            match.productName = { $regex: new RegExp(escapeRegex(inquiry.search), "i") };
         }
 
         const sort: T = inquiry.order === "productPrice"

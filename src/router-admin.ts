@@ -3,12 +3,17 @@ const routerAdmin = express.Router();
 import mobileshopController from "./controllers/mobileshop.controller";
 import productController from "./controllers/product.controller";
 import makeUploader from "./libs/utils/uploader";
+import { loginLimiter } from "./libs/security/rateLimit";
+import { SECURITY_ON } from "./libs/security/flag";
+import { RequestHandler } from "express";
+const guard = (mw: RequestHandler): RequestHandler =>
+  SECURITY_ON ? mw : (_req, _res, next) => next();
 
 /** Mobileshop */
 routerAdmin.get("/home", mobileshopController.goHome);
 routerAdmin
   .get("/login", mobileshopController.getLogin)
-  .post("/login", mobileshopController.processLogin);
+  .post("/login", guard(loginLimiter), mobileshopController.processLogin);
 
 routerAdmin
   .get("/login-signup", mobileshopController.getSignup)

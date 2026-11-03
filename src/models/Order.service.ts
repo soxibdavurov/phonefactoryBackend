@@ -8,16 +8,21 @@ import { HttpCode } from "../libs/Errors";
 import { ObjectId } from "mongoose";
 import { OrderStatus } from "../libs/enums/order.enum";
 import MemberService from "./Member.service";
+import ProductModel from "../schema/Product.model";
+import { ProductStatus } from "../libs/enums/products.enum";
+import { SECURITY_ON } from "../libs/security/flag";
 
 class OrderService {
   private readonly orderModel;
   private readonly orderItemModel;
   private readonly memberService;
+  private readonly productModel;
 
   constructor() {
     this.orderModel = OrderModel;
     this.orderItemModel = OrderItemModel;
     this.memberService = new MemberService();
+    this.productModel = ProductModel;
   }
 
   public async createOrder(
@@ -25,7 +30,29 @@ class OrderService {
     input: OrderItemInput[]):
     Promise<Order> {
     const memberId = shapeIntoMongooseObjectId(member._id);
-    const amount = input.reduce((accumlator: number, item: OrderItemInput) => {
+
+    // Narx klientdan emas, bazadagi mahsulot narxidan olinadi
+    let pricedItems: OrderItemInput[] = input;
+    if (SECURITY_ON) {
+      const productIds = input.map((item) => shapeIntoMongooseObjectId(item.productId));
+      const products = await this.productModel
+        .find({ _id: { $in: productIds }, productStatus: ProductStatus.PROCESS })
+        .lean()
+        .exec();
+      const priceById = new Map<string, number>(
+        products.map((p: any) => [String(p._id), Number(p.productPrice)])
+      );
+      if (input.some((item) => !priceById.has(String(item.productId))))
+        throw new Errors(HttpCode.BAD_REQUEST, Message.CR_FAIL);
+      pricedItems = input.map((item) => ({
+        productId: item.productId,
+        itemQuantity: item.itemQuantity,
+        itemPrice: priceById.get(String(item.productId)) as number,
+        itemDiscount: 0,
+      }));
+    }
+
+    const amount = pricedItems.reduce((accumlator: number, item: OrderItemInput) => {
       return accumlator + item.itemPrice * item.itemQuantity;
     }, 0);
     const delivery = amount < 100 ? 5 : 0;
@@ -39,7 +66,7 @@ class OrderService {
 
       const orderId = newOrder._id;
       console.log("orderId", newOrder._id);
-      await this.recordOrderItem(orderId, input);
+      await this.recordOrderItem(orderId, pricedItems);
       return newOrder;
 
     } catch (err) {
@@ -102,27 +129,30 @@ class OrderService {
     member: Member,
     input: OrderUpdateInput
   ): Promise<Order> {
-    console.log("BU YANGI", input)
     const memberId = shapeIntoMongooseObjectId(member._id),
       orderId = shapeIntoMongooseObjectId(input.orderId),
       orderStatus = input.orderStatus;
 
+    // Egalik (memberId) har doim tekshiriladi; himoya yoqilganda holat o'tishi ham cheklanadi
+    const match: any = { memberId: memberId, _id: orderId };
+    if (SECURITY_ON) {
+      const allowedFrom: Record<string, OrderStatus[]> = {
+        [OrderStatus.PROCESS]: [OrderStatus.PAUSE],
+        [OrderStatus.DELETE]: [OrderStatus.PAUSE],
+        [OrderStatus.FINISH]: [OrderStatus.PROCESS],
+      };
+      const fromStatuses = allowedFrom[orderStatus];
+      if (!fromStatuses) throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS);
+      match.orderStatus = { $in: fromStatuses };
+    }
+
     const result = await this.orderModel
-      .findOneAndUpdate(
-        {
-          memberId: memberId,
-          _id: orderId,
-        },
-        { orderStatus: orderStatus },
-        { new: true }
-      )
+      .findOneAndUpdate(match, { orderStatus: orderStatus }, { new: true })
       .exec();
 
-    console.log("result", result)
+    if (!result) throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS);
 
-    if (!result) throw new Errors(HttpCode.NOT_MODIFIED, Message.UP_FAIL);
-
-    // orderStatus Pause => PROCESS + 1 point
+    // PAUSE => PROCESS faqat bir marta bo'ladi, shuning uchun ball ham bir marta qo'shiladi
     if (orderStatus === OrderStatus.PROCESS) {
       await this.memberService.addUserPoint(member, 1)
     }

@@ -9,6 +9,7 @@ import Errors, { HttpCode, Message } from "../libs/Errors";
 import { MemberStatus, MemberType } from "../libs/enums/member.enum";
 import * as bcrypt from "bcrypt";
 import { shapeIntoMongooseObjectId } from "../libs/config";
+import { SECURITY_ON } from "../libs/security/flag";
 class MemberService {
   private readonly memberModel;
 
@@ -30,6 +31,12 @@ class MemberService {
     return result;
   }
   public async signup(input: MemberInput): Promise<Member> {
+    // Rol, holat va ballarni foydalanuvchi o'zi belgilay olmaydi
+    if (SECURITY_ON) {
+      input.memberType = MemberType.USER;
+      input.memberStatus = MemberStatus.ACTIVE;
+      input.memberPoints = 0;
+    }
     const salt = await bcrypt.genSalt();
     input.memberPassword = await bcrypt.hash(input.memberPassword, salt);
 
@@ -54,7 +61,8 @@ class MemberService {
       )
       .exec();
 
-    if (!member) throw new Errors(HttpCode.NOT_FOUND, Message.NO_MEMBER_NICK);
+    // Foydalanuvchi mavjudligini oshkor qilmaslik uchun bir xil xabar
+    if (!member) throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_CREDENTIALS);
     else if (member.memberStatus == MemberStatus.BLOCK) {
       throw new Errors(HttpCode.FORBIDDEN, Message.BLOCKED_USER);
     }
@@ -66,7 +74,7 @@ class MemberService {
     //const isMatch = input.memberPassword === member.memberPassword;
 
     if (!isMatch) {
-      throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_PASSWORD);
+      throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_CREDENTIALS);
     }
 
     return await this.memberModel.findById(member._id).lean().exec();
@@ -87,8 +95,17 @@ class MemberService {
     input: MemberUpdateInput
   ): Promise<Member> {
     const memberId = shapeIntoMongooseObjectId(member._id);
+    // Faqat profil maydonlari yangilanadi (rol, holat, ball, parol emas)
+    let payload: Partial<MemberUpdateInput> = input;
+    if (SECURITY_ON) {
+      const allowed: Partial<MemberUpdateInput> = {};
+      for (const key of ["memberNick", "memberPhone", "memberAddress", "memberDesc", "memberImage"] as const) {
+        if (input[key] !== undefined) allowed[key] = input[key];
+      }
+      payload = allowed;
+    }
     const result = await this.memberModel
-      .findByIdAndUpdate(memberId, input, { new: true })
+      .findByIdAndUpdate(memberId, payload, { new: true })
       .exec();
     if (!result) throw new Errors(HttpCode.NOT_MODIFIED, Message.UP_FAIL);
 
@@ -133,10 +150,8 @@ class MemberService {
       .exec();
     if (exist) throw new Errors(HttpCode.BAD_REQUEST, Message.CR_FAIL);
 
-    console.log("before", input.memberPassword);
     const salt = await bcrypt.genSalt();
     input.memberPassword = await bcrypt.hash(input.memberPassword, salt);
-    console.log("after", input.memberPassword);
 
     try {
       const result = await this.memberModel.create(input);
@@ -150,7 +165,7 @@ class MemberService {
   public async processLogin(input: LoginInput): Promise<Member> {
     const member = await this.memberModel
       .findOne(
-        { memberNick: input.memberNick },
+        { memberNick: String(input.memberNick), memberType: MemberType.MOBILESHOP },
         { memberNick: 1, memberPassword: 1 }
       )
       .exec();

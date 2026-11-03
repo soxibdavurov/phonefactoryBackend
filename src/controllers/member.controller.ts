@@ -11,6 +11,18 @@ import {
 import Errors, { HttpCode, Message } from "../libs/Errors";
 import AuthService from "../models/Auth.service";
 import { AUTH_TIMER } from "../libs/config";
+import { logSecurityEvent } from "../libs/security/securityLog";
+import { SECURITY_ON } from "../libs/security/flag";
+
+// Token JavaScript orqali o'qilmasligi uchun HttpOnly; CSRF xavfini kamaytirish uchun SameSite
+const tokenCookieOptions = {
+  maxAge: AUTH_TIMER * 3600 * 1000,
+  httpOnly: SECURITY_ON, // baseline rejimda httpOnly: false (zaif)
+  sameSite: "lax" as const,
+  secure: process.env.NODE_ENV === "production",
+};
+// Frontend faqat "login qilinganmi" ekanini bilishi uchun maxfiy bo'lmagan belgi
+const flagCookieOptions = { ...tokenCookieOptions, httpOnly: false };
 
 //REACT
 
@@ -40,12 +52,10 @@ memberController.signup = async (req: Request, res: Response) => {
     const input: MemberInput = req.body,
       result: Member = await memberService.signup(input);
     const token = await authService.createToken(result);
-    res.cookie("accessToken", token, {
-      maxAge: AUTH_TIMER * 3600 * 1000,
-      httpOnly: false,
-    });
+    res.cookie("accessToken", token, tokenCookieOptions);
+    res.cookie("isLoggedIn", "1", flagCookieOptions);
 
-    res.status(HttpCode.CREATED).json({ member: result, accessToken: token });
+    res.status(HttpCode.CREATED).json({ member: result });
   } catch (err) {
     console.log("Error, signup", err);
     if (err instanceof Errors) res.status(err.code).json(err);
@@ -62,14 +72,14 @@ memberController.login = async (req: Request, res: Response) => {
       result = await memberService.login(input),
       token = await authService.createToken(result);
 
-    res.cookie("accessToken", token, {
-      maxAge: AUTH_TIMER * 3600 * 1000,
-      httpOnly: false,
-    });
+    res.cookie("accessToken", token, tokenCookieOptions);
+    res.cookie("isLoggedIn", "1", flagCookieOptions);
 
-    res.status(HttpCode.OK).json({ member: result, accessToken: token });
+    logSecurityEvent("LOGIN_SUCCESS", { memberNick: input.memberNick, ip: req.ip });
+    res.status(HttpCode.OK).json({ member: result });
   } catch (err) {
     console.log("Error, login", err);
+    logSecurityEvent("LOGIN_FAIL", { ip: req.ip });
     if (err instanceof Errors) res.status(err.code).json(err);
     else res.status(Errors.standard.code).json(Errors.standard);
   }
@@ -77,7 +87,8 @@ memberController.login = async (req: Request, res: Response) => {
 memberController.logout = (req: ExtendedRequest, res: Response) => {
   try {
     console.log("logout");
-    res.cookie("accessToken", null, { maxAge: 0, httpOnly: true });
+    res.clearCookie("accessToken", tokenCookieOptions);
+    res.clearCookie("isLoggedIn", flagCookieOptions);
     res.status(HttpCode.OK).json({ logout: true });
   } catch (err) {
     console.log("Error, logout", err);

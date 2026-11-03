@@ -11,8 +11,14 @@ class AuthService {
   public async createToken(payload: Member) {
     return new Promise((resolve, reject) => {
       const duration = `${AUTH_TIMER}h`;
+      // Tokenga faqat kerakli minimal ma'lumot qo'yiladi
+      const claims = {
+        _id: String(payload._id),
+        memberNick: payload.memberNick,
+        memberType: payload.memberType,
+      };
       jwt.sign(
-        payload,
+        claims,
         process.env.SECRET_TOKEN as string,
         {
           expiresIn: duration,
@@ -28,10 +34,9 @@ class AuthService {
     });
   }
   public async checkAuth(token: string): Promise<Member> {
-    const result: Member = (await jwt.verify(
-      token,
-      this.secretToken
-    )) as Member;
+    const result: Member = (await jwt.verify(token, this.secretToken, {
+      algorithms: ["HS256"],
+    })) as Member;
     console.log(`--- [AUTH] memberNick:, ${(result.memberNick)}`)
     return result
   }

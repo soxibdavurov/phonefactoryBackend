@@ -22,9 +22,9 @@ productController.getProducts = async (req: Request, res: Response) => {
             limit: Number(limit),
         };
         if (productCollection)
-            inquiry.productCollection = productCollection as ProductCollection;
+            inquiry.productCollection = String(productCollection) as ProductCollection;
         if (productBrand)
-            inquiry.productBrand = productBrand as ProductBrand;
+            inquiry.productBrand = String(productBrand) as ProductBrand;
         if (search) inquiry.search = String(search);
 
         const result = await productService.getProducts(inquiry);
