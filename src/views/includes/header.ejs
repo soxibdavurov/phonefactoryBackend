@@ -35,8 +35,8 @@
       <div class="mdc-drawer__content">
         <% if(member) { %>
           <div class="user-info">
-            <p class="name">Assalomu alaykum, Sohibjon</p>
-            <p class="email">phonefactory9031@gmail.com</p>
+            <p class="name">Hello, <%= member.memberNick %></p>
+            <p class="email"><%= member.memberPhone %></p>
           </div>
           <% } %>
             <div class="mdc-list-group">
@@ -76,7 +76,14 @@
                             </a>
                           </div>
                           <div class="mdc-list-item mdc-drawer-item">
-                            <a class="mdc-drawer-link" href="/admin/user/barcha">
+                            <a class="mdc-drawer-link" href="/admin/blog/all">
+                              <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
+                                aria-hidden="true">description</i>
+                              Blogs
+                            </a>
+                          </div>
+                          <div class="mdc-list-item mdc-drawer-item">
+                            <a class="mdc-drawer-link" href="/admin/user/all">
                               <i class="material-icons mdc-list-item__start-detail mdc-drawer-item-icon"
                                 aria-hidden="true">grid_on</i>
                               Users
@@ -112,7 +119,7 @@
               <button class="material-icons mdc-top-app-bar__navigation-icon mdc-icon-button sidebar-toggler">
                 menu
               </button>
-              <span class="mdc-top-app-bar__title">Greetings Sajangnim!</span>
+              <span class="mdc-top-app-bar__title">Hello, <%= member.memberNick %></span>
 
             </div>
 
@@ -121,9 +128,9 @@
                 <button class="mdc-button mdc-menu-button">
                   <span class="d-flex align-items-center">
                     <span class="figure">
-                      <img src="../../../assets/images/faces/face1.jpg" alt="user" class="user" />
+                      <img src="<%= member.memberImage ? '/' + member.memberImage : '../../../assets/images/faces/face1.jpg' %>" alt="user" class="user" />
                     </span>
-                    <span class="user-name">Sohibjon</span>
+                    <span class="user-name"><%= member.memberNick %></span>
                   </span>
                 </button>
                 <div class="mdc-menu mdc-menu-surface" tabindex="-1">

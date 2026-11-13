@@ -1,0 +1,99 @@
+<%- include('includes/header') %>
+
+  <link rel="stylesheet" type="text/css" href="/css/products.css" />
+  <style>
+    .blog-admin-form .half-input-frame { display: flex; gap: 16px; flex-wrap: wrap; }
+    .blog-admin-form .half-input, .blog-admin-form .long-input { flex: 1; min-width: 220px; margin-bottom: 14px; }
+    .blog-admin-form input, .blog-admin-form textarea, .blog-admin-form select {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+    .blog-admin-form textarea { min-height: 120px; }
+    .blog-admin-form .upload-img-box { position: relative; width: 160px; }
+    .blog-admin-form .upload-img-box img { width: 160px; height: 100px; object-fit: cover; display: block; }
+    .blog-admin-form .upload-img-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .blog-admin-form .operation-buttons { display: flex; gap: 10px; margin-top: 12px; }
+  </style>
+
+  <div class="page-wrapper mdc-toolbar-fixed-adjust">
+    <main class="content-wrapper">
+      <div class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+          <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+            <div class="mdc-card" style="padding: 20px;">
+              <h6 class="card-title">Edit blog</h6>
+              <form onsubmit="return validateBlogForm()" action="/admin/blog/edit/<%= blog._id %>" method="POST"
+                class="blog-admin-form" enctype="multipart/form-data">
+                <div class="half-input-frame">
+                  <div class="half-input">
+                    <label>Title</label>
+                    <input type="text" name="blogTitle" class="blog-title" value="<%= blog.blogTitle %>" required />
+                  </div>
+                  <div class="half-input">
+                    <label>Category</label>
+                    <select name="blogCategory">
+                      <% categories.forEach(function(category) { %>
+                        <option value="<%= category %>" <%=blog.blogCategory===category ? 'selected' : '' %>>
+                          <%= category %>
+                        </option>
+                        <% }) %>
+                    </select>
+                  </div>
+                  <div class="half-input">
+                    <label>Status</label>
+                    <select name="blogStatus">
+                      <option value="PROCESS" <%=blog.blogStatus==='PROCESS' ? 'selected' : '' %>>PROCESS</option>
+                      <option value="PAUSE" <%=blog.blogStatus==='PAUSE' ? 'selected' : '' %>>PAUSE</option>
+                      <option value="DELETE" <%=blog.blogStatus==='DELETE' ? 'selected' : '' %>>DELETE</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="long-input">
+                  <label>Tags</label>
+                  <input type="text" name="blogTags" value="<%= (blog.blogTags || []).join(', ') %>" />
+                </div>
+                <div class="long-input">
+                  <label>Short excerpt</label>
+                  <textarea name="blogExcerpt"><%= blog.blogExcerpt %></textarea>
+                </div>
+                <div class="long-input">
+                  <label>Content</label>
+                  <textarea name="blogContent" class="blog-content" rows="10" required><%= blog.blogContent %></textarea>
+                </div>
+                <%- include('includes/translations', {
+                  fields: [
+                    { key: 'blogTitle', label: 'Title', type: 'text' },
+                    { key: 'blogExcerpt', label: 'Short excerpt', type: 'textarea' },
+                    { key: 'blogContent', label: 'Content', type: 'textarea' },
+                    { key: 'blogTags', label: 'Tags', type: 'text' },
+                  ],
+                  translations: blog.translations || {},
+                }) %>
+                <div class="img-frame">
+                  <label>Cover image</label>
+                  <div class="media-frame">
+                    <div class="upload-img-box">
+                      <img id="blog-image-preview"
+                        src="<%= blog.blogImage ? '/' + blog.blogImage : '/img/upload.svg' %>" />
+                      <input type="file" name="blogImage" accept="image/*" onchange="previewBlogImage(this)" />
+                    </div>
+                  </div>
+                  <small>Bo'sh qoldirsangiz, eski rasm saqlanadi.</small>
+                </div>
+                <div class="operation-buttons">
+                  <button type="submit" class="btn mdc-button mdc-button--unelevated filled-button--success">
+                    Save
+                  </button>
+                  <a class="btn btn-secondary" href="/admin/blog/all">Cancel</a>
+                </div>
+              </form>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript" src="/js/blogs.js"></script>
+  <%- include('includes/footer') %>

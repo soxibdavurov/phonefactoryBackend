@@ -10,7 +10,7 @@ $(function () {
             _id: id,
             memberStatus: memberStatus,
         })
-            .then(response => {
+            .then(response => { 
                 const result = response.data;
                 if (result.data) {
                     $(".member-status").blur();

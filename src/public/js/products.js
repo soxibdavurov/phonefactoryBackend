@@ -1,32 +1,27 @@
 console.log("Products frontend javascript file");
 
 $(function () {
-  $(".product-collection").on("change", () => {
+  const toggleProductFields = () => {
     const selectedValue = $(".product-collection").val();
-    if (selectedValue === "SMARTPHONE" || "TABLET") {
+    const phoneLike = selectedValue === "SMARTPHONE" || selectedValue === "TABLET";
+    if (phoneLike) {
       $("#brand").show();
       $("#size-collection").show();
-    }
-    else {
+    } else {
       $("#brand").hide();
       $("#size-collection").hide();
     }
     if (selectedValue === "TARIFF") {
+      $("#brand").show();
       $("#size-collection").hide();
       $("#tariff-type").show();
     } else {
       $("#tariff-type").hide();
     }
+  };
 
-    // if (selectedValue === "ACCESSORY") {
-    //   $("#size-collection").hide();
-    //   $("#accessory").show();
-    //   $("#brand").show();
-    // } else {
-    //   $("#accessory").hide();
-    // }
-  }
-  );
+  $(".product-collection").on("change", toggleProductFields);
+  toggleProductFields();
 
   // $("#process-btn").on("click", () => {
   //   $(".dish-container").slideToggle(500);
@@ -66,17 +61,13 @@ function validateForm() {
   const productLeftCount = $(".product-left-count").val();
   const productCollection = $(".product-collection").val();
   const productDesc = $(".product-desc").val();
-  const productStatus = $(".product-status").val();
-  const productBrand = $(".product-status").val();
 
   if (
     productName == "" ||
     productPrice == "" ||
     productLeftCount == "" ||
     productCollection == "" ||
-    productDesc == "" ||
-    productStatus == "" ||
-    productBrand == ""
+    productDesc == ""
   ) {
     alert("Please insert all required details!");
     return false;

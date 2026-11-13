@@ -1,0 +1,128 @@
+<%- include('includes/header') %>
+  <style>
+    .blog-admin-form { padding: 20px; }
+    .blog-admin-form .half-input-frame { display: flex; gap: 16px; flex-wrap: wrap; }
+    .blog-admin-form .half-input, .blog-admin-form .long-input { flex: 1; min-width: 220px; margin-bottom: 14px; }
+    .blog-admin-form label { display: block; margin-bottom: 6px; }
+    .blog-admin-form input, .blog-admin-form textarea, .blog-admin-form select {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+    .blog-admin-form textarea { min-height: 120px; }
+    .current-photos { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .current-photos img { width: 90px; height: 70px; object-fit: cover; }
+  </style>
+  <div class="page-wrapper mdc-toolbar-fixed-adjust">
+    <main class="content-wrapper">
+      <div class="mdc-layout-grid">
+        <div class="mdc-card" style="padding: 8px;">
+          <h6 class="card-title card-padding">Edit product</h6>
+          <form onsubmit="return validateForm()" action="/admin/product/edit/<%= product._id %>" method="POST"
+            class="blog-admin-form" enctype="multipart/form-data">
+            <div class="half-input-frame">
+              <div class="half-input">
+                <label>Product name</label>
+                <input type="text" name="productName" class="product-name" value="<%= product.productName %>" required />
+              </div>
+              <div class="half-input">
+                <label>Stock</label>
+                <input type="number" name="productLeftCount" class="product-left-count" min="0"
+                  value="<%= product.productLeftCount %>" required />
+              </div>
+              <div class="half-input">
+                <label>Show as New</label>
+                <input type="checkbox" name="isNew" value="true" <%= product.isNew ? 'checked' : '' %> />
+              </div>
+              <div class="half-input">
+                <label>Status</label>
+                <select name="productStatus" class="product-status">
+                  <% statuses.forEach(function(status) { %>
+                    <option value="<%= status.value %>" <%= product.productStatus === status.value ? 'selected' : '' %>>
+                      <%= status.label %>
+                    </option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="half-input-frame">
+              <div class="half-input">
+                <label>Price</label>
+                <input type="number" name="productPrice" class="product-price" min="0" value="<%= product.productPrice %>" required />
+              </div>
+              <div class="half-input">
+                <label>Discount in ₩</label>
+                <input type="number" name="productDiscount" class="productDiscount" min="0" value="<%= product.productDiscount || 0 %>" />
+              </div>
+            </div>
+            <div class="half-input-frame">
+              <div class="half-input">
+                <label>Product type</label>
+                <select class="product-collection" name="productCollection">
+                  <% collections.forEach(function(item) { %>
+                    <option value="<%= item %>" <%= product.productCollection === item ? 'selected' : '' %>><%= item %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="half-input" id="brand">
+                <label>Brand</label>
+                <select class="product-brand" name="productBrand">
+                  <option value="">None</option>
+                  <% brands.forEach(function(item) { %>
+                    <option value="<%= item %>" <%= product.productBrand === item ? 'selected' : '' %>><%= item %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="half-input" id="size-collection">
+                <label>Storage</label>
+                <select class="product-size" name="productSize">
+                  <option value="">None</option>
+                  <% sizes.forEach(function(item) { %>
+                    <option value="<%= item %>" <%= product.productSize === item ? 'selected' : '' %>><%= item %></option>
+                  <% }) %>
+                </select>
+              </div>
+              <div class="half-input" id="tariff-type">
+                <label>Tariff</label>
+                <select name="tariffType">
+                  <option value="">None</option>
+                  <% tariffs.forEach(function(item) { %>
+                    <option value="<%= item %>" <%= product.tariffType === item ? 'selected' : '' %>><%= item %></option>
+                  <% }) %>
+                </select>
+              </div>
+            </div>
+            <div class="long-input">
+              <label>Description</label>
+              <textarea name="productDesc" class="product-desc" required><%= product.productDesc || '' %></textarea>
+            </div>
+            <%- include('includes/translations', {
+              fields: [
+                { key: 'productName', label: 'Name', type: 'text' },
+                { key: 'productDesc', label: 'Description', type: 'textarea' },
+              ],
+              translations: product.translations || {},
+            }) %>
+            <div class="long-input">
+              <label>Current photos</label>
+              <div class="current-photos">
+                <% (product.productImages || []).forEach(function(image) { %>
+                  <img src="/<%= image %>" alt="" />
+                <% }) %>
+              </div>
+              <label>Replace photos</label>
+              <input type="file" name="productImages" accept="image/*" multiple />
+              <small>Leave this empty to keep the current photos. New uploads replace the whole set (up to 5).</small>
+            </div>
+            <div class="operation-buttons" style="display: flex; gap: 10px;">
+              <button type="submit" class="btn btn-primary">Save</button>
+              <a class="btn btn-secondary" href="/admin/product/all">Cancel</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript" src="/js/products.js"></script>
+  <%- include('includes/footer') %>

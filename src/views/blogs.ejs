@@ -1,0 +1,171 @@
+<%- include('includes/header') %>
+
+  <link rel="stylesheet" type="text/css" href="/css/products.css" />
+  <style>
+    .blog-admin-form { padding: 20px; }
+    .blog-admin-form .half-input-frame { display: flex; gap: 16px; flex-wrap: wrap; }
+    .blog-admin-form .half-input, .blog-admin-form .long-input { flex: 1; min-width: 220px; margin-bottom: 14px; }
+    .blog-admin-form input, .blog-admin-form textarea, .blog-admin-form select {
+      width: 100%;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      padding: 8px 10px;
+    }
+    .blog-admin-form textarea { min-height: 90px; }
+    .blog-admin-form .upload-img-box { position: relative; width: 140px; }
+    .blog-admin-form .upload-img-box img { width: 140px; height: 90px; object-fit: cover; display: block; }
+    .blog-admin-form .upload-img-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; }
+    .blog-admin-form .operation-buttons { display: flex; gap: 10px; margin-top: 12px; }
+  </style>
+
+  <div class="page-wrapper mdc-toolbar-fixed-adjust">
+    <main class="content-wrapper">
+      <div class="mdc-layout-grid">
+        <div class="mdc-layout-grid__inner">
+          <div class="mdc-layout-grid__cell stretch-card mdc-layout-grid__cell--span-12">
+            <div class="mdc-card p-0">
+              <h6 class="card-title card-padding pb-0">Blogs</h6>
+              <p class="card-padding" style="margin-bottom: 0;">
+                Yangi maqola saqlangach saytda ko'rinadi. Yashirish uchun statusni PAUSE, o'chirish uchun DELETE qiling.
+              </p>
+
+              <form onsubmit="return validateBlogForm()" action="/admin/blog/create" method="POST"
+                class="blog-admin-form" enctype="multipart/form-data">
+                <div class="long-input">
+                  <span class="new-dish-txt">NEW BLOG</span>
+                </div>
+                <div class="half-input-frame">
+                  <div class="half-input">
+                    <label>Title</label>
+                    <input type="text" name="blogTitle" class="blog-title" placeholder="Blog title" required />
+                  </div>
+                  <div class="half-input">
+                    <label>Category</label>
+                    <select name="blogCategory">
+                      <% categories.forEach(function(category) { %>
+                        <option value="<%= category %>">
+                          <%= category %>
+                        </option>
+                        <% }) %>
+                    </select>
+                  </div>
+                  <div class="half-input">
+                    <label>Status</label>
+                    <select name="blogStatus">
+                      <option value="PROCESS" selected>PROCESS</option>
+                      <option value="PAUSE">PAUSE</option>
+                    </select>
+                  </div>
+                </div>
+                <div class="long-input">
+                  <label>Tags</label>
+                  <input type="text" name="blogTags" placeholder="sim, guide, tips" />
+                </div>
+                <div class="long-input">
+                  <label>Short excerpt</label>
+                  <textarea name="blogExcerpt" placeholder="Short summary shown on the blog list"></textarea>
+                </div>
+                <div class="long-input">
+                  <label>Content</label>
+                  <textarea name="blogContent" class="blog-content" rows="8" required></textarea>
+                </div>
+                <%- include('includes/translations', {
+                  fields: [
+                    { key: 'blogTitle', label: 'Title', type: 'text' },
+                    { key: 'blogExcerpt', label: 'Short excerpt', type: 'textarea' },
+                    { key: 'blogContent', label: 'Content', type: 'textarea' },
+                    { key: 'blogTags', label: 'Tags', type: 'text' },
+                  ],
+                  translations: {},
+                }) %>
+                <div class="img-frame">
+                  <label>Cover image</label>
+                  <div class="media-frame">
+                    <div class="upload-img-box">
+                      <img src="/img/upload.svg" id="blog-image-preview" />
+                      <input type="file" name="blogImage" accept="image/*" required
+                        onchange="previewBlogImage(this)" />
+                    </div>
+                  </div>
+                </div>
+                <div class="operation-buttons">
+                  <button type="submit" class="btn mdc-button mdc-button--unelevated filled-button--success">
+                    Create blog
+                  </button>
+                </div>
+              </form>
+
+              <div class="table-responsive">
+                <table class="table table-hoverable">
+                  <thead>
+                    <tr>
+                      <th style="text-align: center;">#</th>
+                      <th style="text-align: center;">Title</th>
+                      <th style="text-align: center;">Category</th>
+                      <th style="text-align: center;">Image</th>
+                      <th style="text-align: center;">Likes</th>
+                      <th style="text-align: center;">Comments</th>
+                      <th style="text-align: center;">Shares</th>
+                      <th style="text-align: center;">Status</th>
+                      <th style="text-align: center;">Actions</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <% if (!blogs.length) { %>
+                      <tr>
+                        <td colspan="9" style="text-align: center;">Hali blog yo'q</td>
+                      </tr>
+                      <% } %>
+                        <% blogs.forEach(function(value, key) { %>
+                          <tr>
+                            <td style="text-align: center;">
+                              <%= key + 1 %>
+                            </td>
+                            <td style="text-align: center;">
+                              <%= value.blogTitle %>
+                            </td>
+                            <td style="text-align: center;">
+                              <%= value.blogCategory %>
+                            </td>
+                            <td style="text-align: center;">
+                              <% if (value.blogImage) { %>
+                                <img src="/<%= value.blogImage %>"
+                                  style="width: 100px; height: 60px; object-fit: cover;" />
+                                <% } %>
+                            </td>
+                            <td style="text-align: center;">
+                              <%= value.likeCount || 0 %>
+                            </td>
+                            <td style="text-align: center;">
+                              <%= value.commentCount || 0 %>
+                            </td>
+                            <td style="text-align: center;">
+                              <%= value.shareCount || 0 %>
+                            </td>
+                            <td style="text-align: center;">
+                              <select class="spec-select blog-status" id="<%= value._id %>">
+                                <option value="PAUSE" <%=value.blogStatus==='PAUSE' ? 'selected' : '' %>>PAUSE</option>
+                                <option value="PROCESS" <%=value.blogStatus==='PROCESS' ? 'selected' : '' %>>PROCESS
+                                </option>
+                                <option value="DELETE" <%=value.blogStatus==='DELETE' ? 'selected' : '' %>>DELETE
+                                </option>
+                              </select>
+                            </td>
+                            <td style="text-align: center;">
+                              <a class="btn btn-primary btn-sm" href="/admin/blog/edit/<%= value._id %>">Edit</a>
+                              <button class="btn btn-danger btn-sm blog-delete" data-id="<%= value._id %>"
+                                type="button">Delete</button>
+                            </td>
+                          </tr>
+                          <% }) %>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script type="text/javascript" src="/js/blogs.js"></script>
+  <%- include('includes/footer') %>

@@ -1,12 +1,15 @@
-import path from 'path';
-import multer from 'multer';
-import {v4} from 'uuid';
+import fs from "fs";
+import path from "path";
+import multer from "multer";
+import { v4 } from "uuid";
 
 /** MULTER IMAGE UPLOADER */
 function getTargetImageStorage(address: any) {
     return multer.diskStorage({
-        destination: function (req, file, cb){
-            cb(null, `./uploads/${address}`);
+        destination: function (req, file, cb) {
+            const dest = `./uploads/${address}`;
+            fs.mkdirSync(dest, { recursive: true });
+            cb(null, dest);
         },
         filename: function(req, file, cb) {
             const extension = path.parse(file.originalname).ext;

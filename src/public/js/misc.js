@@ -19,27 +19,18 @@
       }
     }
 
-    //Add active class to nav-link based on url dynamically
-    //Active class can be hard coded directly in html file also as required
-    var current = location.pathname.split("/").slice(-1)[0].replace(/^\/|\/$/g, '');
+    // Match /admin/product, /admin/blog, /admin/user — not the shared last segment "all"
+    var sectionOf = function (path) {
+      var parts = String(path || '').split('/').filter(Boolean);
+      return parts.length >= 2 ? '/' + parts[0] + '/' + parts[1] : String(path || '');
+    };
+    var currentSection = sectionOf(location.pathname);
     $('.mdc-drawer-item .mdc-drawer-link', sidebar).each(function () {
       var $this = $(this);
-      if (current === "") {
-        //for root url
-        if ($this.attr('href').indexOf("index.html") !== -1) {
-          $(this).addClass('active');
-          if ($(this).parents('.mdc-expansion-panel').length) {
-            $(this).closest('.mdc-expansion-panel').addClass('expanded');
-          }
-        }
-      } else {
-        //for other url
-        if ($this.attr('href').indexOf(current) !== -1) {
-          $(this).addClass('active');
-          if ($(this).parents('.mdc-expansion-panel').length) {
-            $(this).closest('.mdc-expansion-panel').addClass('expanded'); 
-            $(this).closest('.mdc-expansion-panel').show();
-          }
+      if (sectionOf($this.attr('href')) === currentSection) {
+        $this.addClass('active');
+        if ($this.parents('.mdc-expansion-panel').length) {
+          $this.closest('.mdc-expansion-panel').addClass('expanded').show();
         }
       }
     });

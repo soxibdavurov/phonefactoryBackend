@@ -10,6 +10,7 @@
                   class="dish-container" enctype="multipart/form-data">
                   <div class="long-input">
                     <span class="new-dish-txt">NEW PRODUCT DETAIL</span>
+                    <p>Draft stays hidden in the shop. Choose Published to show it now.</p>
                   </div>
                   <div class="half-input-frame">
                     <div class="half-input">
@@ -22,12 +23,16 @@
                         class="product-left-count" />
                     </div>
                     <div class="half-input">
-                      <label>Check if you want to show as New</label>
+                      <label>Show as New</label>
                       <input type="checkbox" name="isNew" value="true" />
-
-
                     </div>
-                    <input name="productStatus" value="PAUSE" class="product-status" hidden />
+                    <div class="half-input">
+                      <label>Status</label>
+                      <select name="productStatus" class="product-status">
+                        <option value="PAUSE" selected>Draft</option>
+                        <option value="PROCESS">Published</option>
+                      </select>
+                    </div>
                   </div>
                   <div class="half-input-frame">
                     <div class="half-input">
@@ -58,7 +63,7 @@
                     </div>
                     <div class="half-input" id="brand" style="display: none">
                       <label>Brand/Company</label>
-                      <select class="product-collection" name="productBrand">
+                      <select class="product-brand" name="productBrand">
                         <option value="OTHER">OTHER</option>
                         <option value="SAMSUNG">SAMSUNG</option>
                         <option value="APPLE">APPLE</option>
@@ -99,6 +104,13 @@
                     <label>Product Description</label>
                     <textarea name="productDesc" class="product-desc"></textarea>
                   </div>
+                  <%- include('includes/translations', {
+                    fields: [
+                      { key: 'productName', label: 'Name', type: 'text' },
+                      { key: 'productDesc', label: 'Description', type: 'textarea' },
+                    ],
+                    translations: {},
+                  }) %>
 
                   <div class="img-frame">
                     <label>Product Images</label>

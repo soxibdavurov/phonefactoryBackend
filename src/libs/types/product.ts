@@ -18,6 +18,10 @@ export interface Product {
   productDesc?: string;
   productImages: string[];
   productViews: number;
+  likeCount?: number;
+  commentCount?: number;
+  shareCount?: number;
+  liked?: boolean;
   productBrand?: ProductBrand;
   productRate?: number;
   tariffType?: TariffType;

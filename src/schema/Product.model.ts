@@ -83,6 +83,21 @@ const productSchema = new Schema(
       default: 0,
     },
 
+    likeCount: {
+      type: Number,
+      default: 0,
+    },
+
+    commentCount: {
+      type: Number,
+      default: 0,
+    },
+
+    shareCount: {
+      type: Number,
+      default: 0,
+    },
+
     productDiscount: {
       type: Number,
       default: 0,
@@ -117,6 +132,11 @@ const productSchema = new Schema(
       trim: true,
       default: "OTHER",
       set: sanitizeString,
+    },
+
+    translations: {
+      type: Schema.Types.Mixed,
+      default: {},
     },
   },
   { timestamps: true }

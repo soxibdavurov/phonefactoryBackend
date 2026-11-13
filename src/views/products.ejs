@@ -9,6 +9,9 @@
               <h6 class="card-title card-padding pb-0">
                 Products
               </h6>
+              <p class="card-padding" style="margin-bottom: 0;">
+                Draft is hidden. Published is on the shop. Archived is removed from the shop.
+              </p>
               <% if(member) { %>
                 <div class="table-responsive">
                   <table class="table table-hoverable">
@@ -17,58 +20,55 @@
                         <th style="text-align: center;">T/r</th>
                         <th style="text-align: center;">Product Name</th>
                         <th style="text-align: center;">Product Type</th>
-                        <th style="text-align: center;">Product size/volume</th>
+                        <th style="text-align: center;">Storage / tariff</th>
+                        <th style="text-align: center;">Stock</th>
                         <th style="text-align: center;">Product Price</th>
                         <th style="text-align: center;">Product Photo</th>
                         <th style="text-align: center;">Status</th>
+                        <th style="text-align: center;">Edit</th>
                       </tr>
                     </thead>
-                    <!--  LOOP PRODUCTS: START  -->
-
                     <tbody>
-                      <% products.map(function(value, key) { %>
+                      <% if (!products.length) { %>
                         <tr>
+                          <td colspan="9" style="text-align: center;">No products</td>
+                        </tr>
+                      <% } %>
+                      <% products.forEach(function(value, key) { %>
+                        <tr>
+                          <td style="text-align: center;"><%= key + 1 %></td>
+                          <td style="text-align: center;"><%= value.productName %></td>
+                          <td style="text-align: center;"><%= value.productCollection %></td>
                           <td style="text-align: center;">
-                            <%= key+1 %>
+                            <%= value.productCollection === 'TARIFF' ? (value.tariffType || '-') : (value.productSize || '-') %>
+                          </td>
+                          <td style="text-align: center;"><%= value.productLeftCount %></td>
+                          <td style="text-align: center;">
+                            <% if (value.productDiscount > 0) { %>
+                              <s><%= value.productPrice %></s><br />
+                              <%= value.productPrice - value.productDiscount %>
+                            <% } else { %>
+                              <%= value.productPrice %>
+                            <% } %>
                           </td>
                           <td style="text-align: center;">
-                            <%= value.productName %>
-                          </td>
-                          <td style="text-align: center;">
-                            <%= value.productCollection %>
-                          </td>
-                          <td style="text-align: center;">
-                            <%= value.productCollection==='TARIFF' ? value.tariffType: value.productSize %>
-                          </td>
-                          <td style="text-align: center;">
-
-                            <% if (value.productDiscount> 0) { %>
-                              <s>
-                                <%= value.productPrice %>
-                              </s><br /><br />
-                              <%= value.productPrice-value.productDiscount %>
-                                <% } else { %>
-                                  <%= value.productPrice %>
-                                    <% } %>
-                          </td>
-                          <td style="text-align: center;">
-                            <img src="/<%= value.productImages[0] %>"
-                              style="width: 100px; height: 50px; object-fit: cover;" />
-
+                            <% if (value.productImages && value.productImages[0]) { %>
+                              <img src="/<%= value.productImages[0] %>" style="width: 100px; height: 50px; object-fit: cover;" />
+                            <% } %>
                           </td>
                           <td style="text-align: center;">
                             <select class="spec-select new-product-status" id="<%= value._id %>">
-                              <option value="PAUSE" <%=value.productStatus==='PAUSE' ? 'selected' : '' %>>PAUSE</option>
-                              <option value="PROCESS" <%=value.productStatus==='PROCESS' ? 'selected' : '' %>>PROCESS
-                              </option>
-                              <option value="DELETE" <%=value.productStatus==='DELETE' ? 'selected' : '' %>>DELETE
-                              </option>
+                              <option value="PAUSE" <%= value.productStatus === 'PAUSE' ? 'selected' : '' %>>Draft</option>
+                              <option value="PROCESS" <%= value.productStatus === 'PROCESS' ? 'selected' : '' %>>Published</option>
+                              <option value="DELETE" <%= value.productStatus === 'DELETE' ? 'selected' : '' %>>Archived</option>
                             </select>
                           </td>
+                          <td style="text-align: center;">
+                            <a class="btn btn-primary btn-sm" href="/admin/product/edit/<%= value._id %>">Edit</a>
+                          </td>
                         </tr>
-                        <% }) %>
+                      <% }) %>
                     </tbody>
-                    <!--  LOOP PRODUCTS: END  -->
                   </table>
                 </div>
 

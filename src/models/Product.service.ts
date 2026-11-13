@@ -13,6 +13,9 @@ import { ObjectId } from "mongoose";
 import ViewService from "./View.service";
 import { ViewInput } from "../libs/types/view";
 import { ViewGroup } from "../libs/enums/view.enum";
+import { TargetType } from "../libs/enums/engagement.enum";
+import LikeModel from "../schema/Like.model";
+import { likedFields } from "../libs/utils/likedLookup";
 
 class ProductService {
     private readonly productModel;
@@ -26,7 +29,10 @@ class ProductService {
     /** SPA */
 
 
-    public async getProducts(inquiry: ProductInquiry): Promise<Product[]> {
+    public async getProducts(
+        inquiry: ProductInquiry,
+        memberId: ObjectId | null = null
+    ): Promise<Product[]> {
         const match: T = { productStatus: ProductStatus.PROCESS };
 
         if (inquiry.productCollection)
@@ -36,21 +42,29 @@ class ProductService {
                 $regex: new RegExp(`^${inquiry.productBrand}$`, "i"), // "i" = case-insensitive
             };
         if (inquiry.search) {
-            match.productName = { $regex: new RegExp(inquiry.search, "i") };
+            const regex = new RegExp(inquiry.search, "i");
+            match.$or = [
+                { productName: regex },
+                { "translations.ru.productName": regex },
+                { "translations.ko.productName": regex },
+                { "translations.uz.productName": regex },
+            ];
         }
 
         const sort: T = inquiry.order === "productPrice"
             ? { [inquiry.order]: 1 }
             : { [inquiry.order]: -1 };
 
+        const actorId = memberId ? shapeIntoMongooseObjectId(memberId) : null;
         const result = await this.productModel.aggregate([
             { $match: match },
             { $sort: sort },
             { $skip: (inquiry.page * 1 - 1) * inquiry.limit },
             { $limit: inquiry.limit * 1 },
+            ...likedFields(actorId, TargetType.PRODUCT),
         ]).exec();
 
-        if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.N_D_F);
+        if (!result) return [];
 
         return result;
     }
@@ -95,21 +109,45 @@ class ProductService {
             }
         }
 
-        return result;
+        if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.N_D_F);
+
+        const liked = memberId
+            ? Boolean(
+                await LikeModel.exists({
+                    memberId,
+                    targetId: productId,
+                    targetType: TargetType.PRODUCT,
+                })
+            )
+            : false;
+
+        return { ...result.toObject(), liked };
     }
 
     /** SSR */
 
     public async getAllProducts(): Promise<Product[]> {
-        const result = await this.productModel
+        return await this.productModel
             .find()
-            .sort({ updatedAt: -1 }) // 🔹 eng yangi mahsulotlar birinchi
+            .sort({ updatedAt: -1 })
             .exec();
+    }
 
-        if (!result || result.length === 0) {
-            throw new Errors(HttpCode.NOT_FOUND, Message.N_D_F);
-        }
+    public async getChosenProduct(id: string): Promise<Product> {
+        const result = await this.productModel
+            .findById(shapeIntoMongooseObjectId(id))
+            .exec();
+        if (!result) throw new Errors(HttpCode.NOT_FOUND, Message.N_D_F);
+        return result;
+    }
 
+    public async updateProductFields(id: string, set: T, unset: T): Promise<Product> {
+        const update: T = { $set: set };
+        if (Object.keys(unset).length) update.$unset = unset;
+        const result = await this.productModel
+            .findByIdAndUpdate(shapeIntoMongooseObjectId(id), update, { new: true })
+            .exec();
+        if (!result) throw new Errors(HttpCode.NOT_MODIFIED, Message.UP_FAIL);
         return result;
     }
 
