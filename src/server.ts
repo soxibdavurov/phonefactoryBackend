@@ -13,7 +13,7 @@ mongoose.connect(process.env.MONGO_URL as string, {})
         const PORT = process.env.PORT ?? 3004;
         app.listen(PORT, function () {
             console.log(`The server is running successfully on port: ${PORT}`);
-            // Tajriba rejimini aniq ko'rsatish (baseline vs defended tekshiruvi uchun)
+            // 실험 모드를 명확히 출력 (baseline / defended 확인용)
             console.log(`[SECTEST] SECURITY_ON=${SECURITY_ON} (SECURITY=${process.env.SECURITY ?? "<unset>"})`);
             console.info(`Admin project on http://localhost:${PORT}/admin/home \n`);
         })

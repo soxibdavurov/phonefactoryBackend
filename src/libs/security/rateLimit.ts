@@ -1,7 +1,7 @@
 import rateLimit from "express-rate-limit";
 import { HttpCode } from "../Errors";
 
-// 10 daqiqada IP bo'yicha 5 ta muvaffaqiyatsiz login urinishi
+// IP당 10분에 실패한 로그인 시도 5회
 export const loginLimiter = rateLimit({
   windowMs: 10 * 60 * 1000,
   limit: 5,
@@ -11,7 +11,7 @@ export const loginLimiter = rateLimit({
   message: { code: 429, message: "Too many login attempts, try again later." },
 });
 
-// Ro'yxatdan o'tish: soatiga IP bo'yicha 10 ta
+// 회원가입: IP당 1시간에 10회
 export const signupLimiter = rateLimit({
   windowMs: 60 * 60 * 1000,
   limit: 10,

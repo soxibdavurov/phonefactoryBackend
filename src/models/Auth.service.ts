@@ -11,7 +11,7 @@ class AuthService {
   public async createToken(payload: Member) {
     return new Promise((resolve, reject) => {
       const duration = `${AUTH_TIMER}h`;
-      // Tokenga faqat kerakli minimal ma'lumot qo'yiladi
+      // 토큰에는 필요한 최소 정보만 포함
       const claims = {
         _id: String(payload._id),
         memberNick: payload.memberNick,

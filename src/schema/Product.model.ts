@@ -10,7 +10,7 @@ import {
 const asEnum = <T extends Record<string, string>>(E: T) => Object.values(E);
 
 const sanitizeString = (v: any) => {
-  // form-data orqali {} yoki '' kelishini to'xtatish
+  // form-data로 {} 또는 '' 값이 들어오는 것을 방지
   if (v === "" || v === null || typeof v === "undefined") return undefined;
   if (typeof v === "object") return undefined; // {} kelib qolsa, enum cast yiqilmasin
   return String(v);
@@ -107,7 +107,7 @@ const productSchema = new Schema(
       set: (v: any) => {
         if (v === true || v === 'true' || v === 'on' || v === 1 || v === '1') return true;
         if (v === false || v === 'false' || v === 0 || v === '0') return false;
-        return undefined; // boshqa qiymat bo'lsa default ishlaydi
+        return undefined; // 그 외의 값이면 기본값 적용
       },
     },
 
@@ -122,7 +122,7 @@ const productSchema = new Schema(
   { timestamps: true }
 );
 
-// unique nom uchun indeks
+// 고유 이름을 위한 인덱스
 productSchema.index({ productName: 1 }, { unique: true });
 
 export default mongoose.model("Product", productSchema);

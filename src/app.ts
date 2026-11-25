@@ -24,7 +24,7 @@ app.use(express.static(path.join(__dirname, "public")));
 app.use("/uploads", express.static("./uploads"));
 app.use(express.urlencoded({ extended: true })); // Middleware DP -> Traditional API
 app.use(express.json()); //Middleware DP -> RestAPI
-// Faqat ruxsat etilgan frontend manzillari cookie bilan so'rov yubora oladi
+// 허용된 프론트엔드 Origin만 쿠키를 포함한 요청을 보낼 수 있음
 const allowedOrigins = (process.env.CORS_ORIGINS ?? "http://localhost:3000")
   .split(",")
   .map((o) => o.trim());
@@ -37,7 +37,7 @@ app.use(
     },
   })
 );
-// Admin EJS sahifalari inline skriptlardan foydalangani uchun CSP hozircha o'chirilgan
+// 관리자 EJS 페이지가 인라인 스크립트를 사용하므로 CSP는 현재 비활성화
 app.use(helmet({ contentSecurityPolicy: false, crossOriginResourcePolicy: { policy: "cross-origin" } }));
 app.use(cookieParser());
 app.use(morgan(MORGAN_FORMAT));

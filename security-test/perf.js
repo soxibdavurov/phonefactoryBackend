@@ -1,7 +1,7 @@
 /*
  * 성능 오버헤드 측정 (표 2).
- * Server ishga tushgan bo'lsin. autocannon o'rnating: npm i -D autocannon
- * MODE=baseline node security-test/perf.js   yoki   MODE=defended ...
+ * 서버를 먼저 실행해 두십시오. autocannon 설치: npm i -D autocannon
+ * MODE=baseline node security-test/perf.js   또는   MODE=defended ...
  */
 const autocannon = require("autocannon");
 const fs = require("fs");
@@ -11,9 +11,9 @@ const BASE = process.env.TEST_URL || "http://127.0.0.1:3999";
 const MODE = process.env.MODE || "baseline";
 const OUT = path.join(__dirname, `perf-${MODE}.json`);
 
-// Perf uchun HAQIQIY (to'g'ri parolli) hisob: login muvaffaqiyatli bo'ladi,
-// shuning uchun rate-limiter (skipSuccessfulRequests) uni bloklamaydi va biz
-// ikkala rejimda ham login yo'lining sof overhead'ini o'lchaymiz.
+// 성능 측정용 실제(올바른 비밀번호) 계정: 로그인이 성공하므로
+// rate-limiter(skipSuccessfulRequests)가 차단하지 않으며,
+// 두 모드 모두에서 로그인 경로의 순수 오버헤드를 측정한다.
 const PERF_USER = {
   memberNick: "perfuser",
   memberPhone: "01099990000",
@@ -28,12 +28,12 @@ async function ensurePerfUser() {
       body: JSON.stringify(PERF_USER),
     });
   } catch (_) {
-    // allaqachon mavjud bo'lsa yoki boshqa holatda — login baribir ishlaydi
+    // 이미 존재하는 경우 등 — 로그인은 그대로 동작한다
   }
 }
 
-// MUHIM: autocannon TO'LIQ url bilan chaqiriladi (alohida `path` opsiyasini
-// autocannon e'tiborsiz qoldiradi va so'rovlar `/` ga ketib 404 bo'ladi).
+// 중요: autocannon은 전체 URL로 호출한다 (별도의 `path` 옵션은
+// autocannon이 무시하여 요청이 `/`로 가서 404가 된다).
 function bench(title, pathStr, opts) {
   return new Promise((resolve, reject) => {
     autocannon(
@@ -45,8 +45,8 @@ function bench(title, pathStr, opts) {
           latency_avg_ms: res.latency.average,
           latency_p99_ms: res.latency.p99,
           req_per_sec: res.requests.average,
-          non2xx: res.non2xx,          // 404/4xx/5xx soni — 0 bo'lishi kerak (login/signup 429 bundan mustasno)
-          errors: res.errors,          // ulanish xatolari
+          non2xx: res.non2xx,          // 404/4xx/5xx 개수 — 0이어야 함 (login/signup의 429는 예외)
+          errors: res.errors,          // 연결 오류
           status_2xx: res["2xx"],
         });
       }
@@ -57,7 +57,7 @@ function bench(title, pathStr, opts) {
 async function main() {
   const out = { mode: MODE, generatedAt: new Date().toISOString(), benchmarks: [] };
 
-  // To'g'ri parolli hisob tayyorlanadi (login muvaffaqiyatli = rate-limit bloklamaydi)
+  // 올바른 비밀번호 계정 준비 (로그인 성공 = rate-limit 미차단)
   await ensurePerfUser();
 
   // 로그인 API (유효 계정 — bcrypt 비교 포함, 두 모드 동일 경로)
@@ -80,7 +80,7 @@ async function main() {
   );
 
   fs.writeFileSync(OUT, JSON.stringify(out, null, 2));
-  console.log(`\n[${MODE}] perf natija: ${OUT}`);
+  console.log(`\n[${MODE}] 성능 결과: ${OUT}`);
   for (const b of out.benchmarks) {
     console.log(
       `  ${b.title.padEnd(14)} avg=${b.latency_avg_ms}ms p99=${b.latency_p99_ms}ms rps=${Math.round(b.req_per_sec)} 2xx=${b.status_2xx} non2xx=${b.non2xx} errors=${b.errors}`

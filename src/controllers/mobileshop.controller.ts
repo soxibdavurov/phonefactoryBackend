@@ -81,7 +81,7 @@ mobileshopController.processLogin = async (
     const result = await memberService.processLogin(input);
     //TODO SESSIONS AUTHENTIACTION
 
-    // Session fixation oldini olish uchun login'dan keyin yangi sessiya ID
+    // 세션 고정(Session fixation) 방지를 위해 로그인 후 새 세션 ID 발급
     req.session.regenerate(function () {
       req.session.member = result;
       req.session.save(function () {

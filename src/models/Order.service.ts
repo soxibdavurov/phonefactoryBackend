@@ -31,7 +31,7 @@ class OrderService {
     Promise<Order> {
     const memberId = shapeIntoMongooseObjectId(member._id);
 
-    // Narx klientdan emas, bazadagi mahsulot narxidan olinadi
+    // 가격은 클라이언트가 아니라 DB의 상품 가격에서 가져옴
     let pricedItems: OrderItemInput[] = input;
     if (SECURITY_ON) {
       const productIds = input.map((item) => shapeIntoMongooseObjectId(item.productId));
@@ -133,7 +133,7 @@ class OrderService {
       orderId = shapeIntoMongooseObjectId(input.orderId),
       orderStatus = input.orderStatus;
 
-    // Egalik (memberId) har doim tekshiriladi; himoya yoqilganda holat o'tishi ham cheklanadi
+    // 소유권(memberId)은 항상 확인; 방어 모드에서는 상태 전이도 제한
     const match: any = { memberId: memberId, _id: orderId };
     if (SECURITY_ON) {
       const allowedFrom: Record<string, OrderStatus[]> = {
@@ -152,7 +152,7 @@ class OrderService {
 
     if (!result) throw new Errors(HttpCode.BAD_REQUEST, Message.INVALID_STATUS);
 
-    // PAUSE => PROCESS faqat bir marta bo'ladi, shuning uchun ball ham bir marta qo'shiladi
+    // PAUSE => PROCESS 전이는 한 번만 가능하므로 포인트도 한 번만 적립됨
     if (orderStatus === OrderStatus.PROCESS) {
       await this.memberService.addUserPoint(member, 1)
     }

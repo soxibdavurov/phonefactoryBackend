@@ -14,7 +14,7 @@ import {
 import { loginLimiter, signupLimiter } from "./libs/security/rateLimit";
 import { SECURITY_ON } from "./libs/security/flag";
 
-// SECURITY=off bo'lsa middleware o'tkazib yuboriladi (baseline tajriba rejimi)
+// SECURITY=off 이면 미들웨어를 건너뜀 (baseline 실험 모드)
 import { RequestHandler } from "express";
 const guard = (mw: RequestHandler): RequestHandler =>
   SECURITY_ON ? mw : (_req, _res, next) => next();

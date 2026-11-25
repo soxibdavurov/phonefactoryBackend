@@ -3,8 +3,8 @@ import { NextFunction, Request, Response } from "express";
 import { HttpCode } from "../Errors";
 import { OrderStatus } from "../enums/order.enum";
 
-// removeAdditional: kutilmagan maydonlar (memberType, memberPoints, ...) jimgina olib tashlanadi
-// coerceTypes yo'q: {"$ne": null} kabi obyektlar string sifatida o'tib ketmaydi
+// removeAdditional: 허용되지 않은 필드(memberType, memberPoints 등)는 자동으로 제거됨
+// coerceTypes 미사용: {"$ne": null} 같은 객체가 문자열로 통과하지 못함
 const ajv = new Ajv({ allErrors: true, removeAdditional: "all" });
 
 const nick = { type: "string", minLength: 3, maxLength: 30 } as const;

@@ -14,14 +14,14 @@ import { AUTH_TIMER } from "../libs/config";
 import { logSecurityEvent } from "../libs/security/securityLog";
 import { SECURITY_ON } from "../libs/security/flag";
 
-// Token JavaScript orqali o'qilmasligi uchun HttpOnly; CSRF xavfini kamaytirish uchun SameSite
+// 토큰을 JavaScript로 읽을 수 없도록 HttpOnly, CSRF 위험 완화를 위해 SameSite 적용
 const tokenCookieOptions = {
   maxAge: AUTH_TIMER * 3600 * 1000,
-  httpOnly: SECURITY_ON, // baseline rejimda httpOnly: false (zaif)
+  httpOnly: SECURITY_ON, // baseline 모드에서는 httpOnly: false (취약)
   sameSite: "lax" as const,
   secure: process.env.NODE_ENV === "production",
 };
-// Frontend faqat "login qilinganmi" ekanini bilishi uchun maxfiy bo'lmagan belgi
+// 프론트엔드가 로그인 여부만 알 수 있도록 하는 비민감 표시 쿠키
 const flagCookieOptions = { ...tokenCookieOptions, httpOnly: false };
 
 //REACT

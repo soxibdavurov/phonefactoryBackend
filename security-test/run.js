@@ -1,7 +1,7 @@
 /*
  * 논문 4장 실험 러너 (baseline vs defended)
- * Serverni oldindan ishga tushiring (PORT=3999), keyin bu skriptni ishga tushiring.
- * Bu skript faqat LOKAL test serveriga so'rov yuboradi, tashqi saytga emas.
+ * 서버를 먼저 실행(PORT=3999)한 후 이 스크립트를 실행한다.
+ * 이 스크립트는 로컬 테스트 서버에만 요청을 보내며, 외부 사이트에는 보내지 않는다.
  */
 const { MongoClient } = require("mongodb");
 const fs = require("fs");
@@ -44,7 +44,7 @@ async function req(method, p, body, jar) {
 const rnd = () => Math.random().toString(36).slice(2, 8);
 
 async function main() {
-  if (!MONGO) throw new Error("MONGO_URL .env da bo'lishi kerak");
+  if (!MONGO) throw new Error(".env에 MONGO_URL이 필요합니다");
   const client = await MongoClient.connect(MONGO);
   const db = client.db();
   const results = { mode: MODE, generatedAt: new Date().toISOString(), attacks: {} };
@@ -64,7 +64,7 @@ async function main() {
   });
   const productId = prod.insertedId.toString();
 
-  // --- Oddiy foydalanuvchi (userA) ---
+  // --- 일반 사용자 (userA) ---
   const nickA = "userA_" + rnd();
   const jarA = {};
   await req("POST", "/member/signup", {
@@ -109,7 +109,7 @@ async function main() {
     const created = order.data && (order.data.result || order.data);
     orderTotal = created && created.orderTotal;
   }
-  // Haqiqiy narx 1000; agar total 1000 dan kichik bo'lsa, narx qabul qilingan
+  // 실제 가격은 1000; 총액이 1000보다 작으면 조작된 가격이 반영된 것
   const priceTamper =
     order.status < 400 && orderTotal !== null && orderTotal < 1000;
   results.attacks.price_tampering = {
@@ -163,7 +163,7 @@ async function main() {
   };
 
   fs.writeFileSync(OUT, JSON.stringify(results, null, 2));
-  console.log(`\n[${MODE}] natija yozildi: ${OUT}`);
+  console.log(`\n[${MODE}] 결과 저장: ${OUT}`);
   for (const [k, v] of Object.entries(results.attacks)) {
     const s = v.success === null ? "N/A" : v.success ? "공격 성공" : "차단됨";
     console.log(`  ${k.padEnd(22)} ${s}  ${JSON.stringify(v.observed)}`);

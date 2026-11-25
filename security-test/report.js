@@ -13,7 +13,7 @@ const read = (f) => {
 const b = read("results-baseline.json");
 const d = read("results-defended.json");
 if (!b || !d) {
-  console.error("Avval baseline va defended uchun run.js ni ishga tushiring.");
+  console.error("먼저 baseline과 defended 모드에서 run.js를 실행하십시오.");
   process.exit(1);
 }
 
@@ -48,8 +48,8 @@ if (pb && pd) {
       `| ${bench.title} | ${bench.latency_avg_ms} | ${dd.latency_avg_ms} | ${inc} | ${bench.latency_p99_ms} | ${dd.latency_p99_ms} |`
     );
   }
-  // Validlik tekshiruvi: so'rovlar haqiqiy endpoint'ga tushганini ko'rsatadi
-  console.log("\n_(validlik: 2xx/non2xx/errors — login himoyada 429 bo'lishi mumkin, qolgani 0 bo'lsin)_");
+  // 유효성 확인: 요청이 실제 엔드포인트에 도달했음을 보여준다
+  console.log("\n_(유효성: 2xx/non2xx/errors — 방어 모드 로그인은 429 가능, 나머지는 0이어야 함)_");
   for (const b of pb.benchmarks) {
     const dd = pd.benchmarks.find((x) => x.title === b.title) || {};
     console.log(
@@ -57,5 +57,5 @@ if (pb && pd) {
     );
   }
 } else {
-  console.log("\n(perf-*.json topilmadi — perf.js ni ishga tushiring)");
+  console.log("\n(perf-*.json 없음 — perf.js를 실행하십시오)");
 }

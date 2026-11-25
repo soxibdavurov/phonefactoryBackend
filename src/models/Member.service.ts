@@ -22,7 +22,7 @@ class MemberService {
   public async getMobileshop(): Promise<Member> {
     const result = await this.memberModel
       .findOne({ memberType: MemberType.MOBILESHOP })
-      .lean() //Plain js datani qo'shib chiqarmoqchi bo'lsak
+      .lean() // 일반 JS 객체(plain object)로 반환
       .exec();
     result.test = "test";
 
@@ -31,7 +31,7 @@ class MemberService {
     return result;
   }
   public async signup(input: MemberInput): Promise<Member> {
-    // Rol, holat va ballarni foydalanuvchi o'zi belgilay olmaydi
+    // 역할·상태·포인트는 사용자가 직접 지정할 수 없음
     if (SECURITY_ON) {
       input.memberType = MemberType.USER;
       input.memberStatus = MemberStatus.ACTIVE;
@@ -61,7 +61,7 @@ class MemberService {
       )
       .exec();
 
-    // Foydalanuvchi mavjudligini oshkor qilmaslik uchun bir xil xabar
+    // 사용자 존재 여부가 드러나지 않도록 동일한 오류 메시지 사용
     if (!member) throw new Errors(HttpCode.UNAUTHORIZED, Message.WRONG_CREDENTIALS);
     else if (member.memberStatus == MemberStatus.BLOCK) {
       throw new Errors(HttpCode.FORBIDDEN, Message.BLOCKED_USER);
@@ -95,7 +95,7 @@ class MemberService {
     input: MemberUpdateInput
   ): Promise<Member> {
     const memberId = shapeIntoMongooseObjectId(member._id);
-    // Faqat profil maydonlari yangilanadi (rol, holat, ball, parol emas)
+    // 프로필 필드만 수정 가능 (역할·상태·포인트·비밀번호 제외)
     let payload: Partial<MemberUpdateInput> = input;
     if (SECURITY_ON) {
       const allowed: Partial<MemberUpdateInput> = {};
