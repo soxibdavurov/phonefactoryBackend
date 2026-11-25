@@ -1,0 +1,29 @@
+### 표 1. 방어 적용 전후 공격 결과
+
+| 공격 유형 | Baseline | Defended |
+|---|---|---|
+| 권한 상승 (대량 할당) | 성공 | 차단 |
+| 가격 변조 | 성공 | 차단 |
+| NoSQL 연산자 주입 | 성공 | 차단 |
+| 무차별 대입 (차단 없음) | 성공 | 차단 |
+
+### 표 2. 성능 오버헤드
+
+| API | Baseline avg(ms) | Defended avg(ms) | 증가(ms) | Baseline p99 | Defended p99 | Baseline req/s | Defended req/s |
+|---|---|---|---|---|---|---|---|
+| login | 449.19 | 402.3 | -46.89 | 1454.33 | 1186 | 46 | 50 |
+| product_list | 181.87 | 177.24 | -4.63 | 798.67 | 792.67 | 110 | 108 |
+
+(20 동시 연결, 15초, 3회 반복 평균)
+
+표 2: 모든 요청 정상 응답(2xx) 확인
+ 
+--- Server rejimi tasdigi (SECURITY_ON) --- 
+[baseline hujum serveri]: 
+[SECTEST] SECURITY_ON=false (SECURITY=off) PERF_NO_RATELIMIT=false
+[defended hujum serveri]: 
+[SECTEST] SECURITY_ON=true (SECURITY=<unset>) PERF_NO_RATELIMIT=false
+[baseline unumdorlik serveri]: 
+[SECTEST] SECURITY_ON=false (SECURITY=off) PERF_NO_RATELIMIT=false
+[defended unumdorlik serveri]: 
+[SECTEST] SECURITY_ON=true (SECURITY=<unset>) PERF_NO_RATELIMIT=true

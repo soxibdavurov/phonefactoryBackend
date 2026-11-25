@@ -38,24 +38,22 @@ const pb = read("perf-baseline.json");
 const pd = read("perf-defended.json");
 if (pb && pd) {
   console.log("\n### 표 2. 성능 오버헤드\n");
-  console.log("| API | Baseline avg(ms) | Defended avg(ms) | 증가(ms) | Baseline p99 | Defended p99 |");
-  console.log("|---|---|---|---|---|---|");
+  console.log("| API | Baseline avg(ms) | Defended avg(ms) | 증가(ms) | Baseline p99 | Defended p99 | Baseline req/s | Defended req/s |");
+  console.log("|---|---|---|---|---|---|---|---|");
+  const warn = [];
   for (const bench of pb.benchmarks) {
     const dd = pd.benchmarks.find((x) => x.title === bench.title);
     if (!dd) continue;
     const inc = (dd.latency_avg_ms - bench.latency_avg_ms).toFixed(2);
     console.log(
-      `| ${bench.title} | ${bench.latency_avg_ms} | ${dd.latency_avg_ms} | ${inc} | ${bench.latency_p99_ms} | ${dd.latency_p99_ms} |`
+      `| ${bench.title} | ${bench.latency_avg_ms} | ${dd.latency_avg_ms} | ${inc} | ${bench.latency_p99_ms} | ${dd.latency_p99_ms} | ${Math.round(bench.req_per_sec)} | ${Math.round(dd.req_per_sec)} |`
     );
+    for (const [m, x] of [["baseline", bench], ["defended", dd]])
+      if (x.non2xx || x.errors) warn.push(`${m}/${x.title}: non2xx=${x.non2xx}, errors=${x.errors}`);
   }
-  // 유효성 확인: 요청이 실제 엔드포인트에 도달했음을 보여준다
-  console.log("\n_(유효성: 2xx/non2xx/errors — 방어 모드 로그인은 429 가능, 나머지는 0이어야 함)_");
-  for (const b of pb.benchmarks) {
-    const dd = pd.benchmarks.find((x) => x.title === b.title) || {};
-    console.log(
-      `- ${b.title}: baseline 2xx=${b.status_2xx} non2xx=${b.non2xx} err=${b.errors} | defended 2xx=${dd.status_2xx} non2xx=${dd.non2xx} err=${dd.errors}`
-    );
-  }
+  const rep = pb.benchmarks[0] && pb.benchmarks[0].repeat;
+  console.log(`\n(20 동시 연결, 15초${rep ? `, ${rep}회 반복 평균` : ""})`);
+  console.log(warn.length ? `\n!! 표 2 신뢰 불가 — 오류 응답 존재: ${warn.join("; ")}` : "\n표 2: 모든 요청 정상 응답(2xx) 확인");
 } else {
   console.log("\n(perf-*.json 없음 — perf.js를 실행하십시오)");
 }

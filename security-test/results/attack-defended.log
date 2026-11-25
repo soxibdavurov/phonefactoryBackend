@@ -1,0 +1,101 @@
+
+> burak@1.0.0 start
+> ts-node src/server.ts
+
+__dirname C:\D disk\masterdegree_test\backend\src
+(node:72316) [MONGOOSE] Warning: `isNew` is a reserved schema pathname and may break some functionality. You are allowed to use it, but use at your own risk. To disable this warning pass `supressReservedKeysWarning` as a schema option.
+(Use `node --trace-warnings ...` to show where the warning was created)
+MongoDB connection succeed
+The server is running successfully on port: 3999
+[SECTEST] SECURITY_ON=true (SECURITY=<unset>) PERF_NO_RATELIMIT=false
+Admin project on http://localhost:3999/admin/home 
+
+signup
+POST /member/signup 120.385 ms [201] 
+
+signup
+POST /member/signup 106.840 ms [201] 
+
+--- [AUTH] memberNick:, userA_rrr8oi
+createOrder
+orderId new ObjectId("6ad10358475855211a994fc6")
+orderItemState: [
+  {
+    itemQuantity: 1,
+    itemPrice: 1000,
+    orderId: new ObjectId("6ad10358475855211a994fc6"),
+    productId: new ObjectId("6ad10357e2e592ec48de68ea"),
+    _id: new ObjectId("6ad10358475855211a994fc8"),
+    createdAt: 2026-10-15T16:46:16.283Z,
+    updatedAt: 2026-10-15T16:46:16.283Z,
+    __v: 0
+  }
+]
+POST /order/create 158.054 ms [201] 
+
+POST /member/login 0.894 ms [400] 
+
+login
+Error, login Errors: Wrong nick or password, please try again.
+    at MemberService.login (C:\D disk\masterdegree_test\backend\src\models\Member.service.ts:77:13)
+    at async memberController.login (C:\D disk\masterdegree_test\backend\src\controllers\member.controller.ts:72:16) {
+  code: 401
+}
+POST /member/login 120.124 ms [401] 
+
+login
+Error, login Errors: Wrong nick or password, please try again.
+    at MemberService.login (C:\D disk\masterdegree_test\backend\src\models\Member.service.ts:77:13)
+    at async memberController.login (C:\D disk\masterdegree_test\backend\src\controllers\member.controller.ts:72:16) {
+  code: 401
+}
+POST /member/login 103.114 ms [401] 
+
+login
+Error, login Errors: Wrong nick or password, please try again.
+    at MemberService.login (C:\D disk\masterdegree_test\backend\src\models\Member.service.ts:77:13)
+    at async memberController.login (C:\D disk\masterdegree_test\backend\src\controllers\member.controller.ts:72:16) {
+  code: 401
+}
+POST /member/login 120.212 ms [401] 
+
+login
+Error, login Errors: Wrong nick or password, please try again.
+    at MemberService.login (C:\D disk\masterdegree_test\backend\src\models\Member.service.ts:77:13)
+    at async memberController.login (C:\D disk\masterdegree_test\backend\src\controllers\member.controller.ts:72:16) {
+  code: 401
+}
+POST /member/login 120.319 ms [401] 
+
+POST /member/login 0.562 ms [429] 
+
+POST /member/login 0.291 ms [429] 
+
+POST /member/login 0.271 ms [429] 
+
+POST /member/login 0.262 ms [429] 
+
+POST /member/login 0.225 ms [429] 
+
+POST /member/login 0.249 ms [429] 
+
+POST /member/login 0.310 ms [429] 
+
+POST /member/login 0.192 ms [429] 
+
+POST /member/login 0.212 ms [429] 
+
+POST /member/login 0.213 ms [429] 
+
+POST /member/login 0.203 ms [429] 
+
+POST /member/login 0.214 ms [429] 
+
+POST /member/login 0.187 ms [429] 
+
+POST /member/login 0.197 ms [429] 
+
+POST /member/login 0.221 ms [429] 
+
+POST /member/login 0.263 ms [429] 
+

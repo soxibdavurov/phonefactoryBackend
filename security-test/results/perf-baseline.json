@@ -1,0 +1,76 @@
+{
+  "mode": "baseline",
+  "generatedAt": "2026-10-15T16:46:30.434Z",
+  "benchmarks": [
+    {
+      "title": "login",
+      "repeat": 3,
+      "latency_avg_ms": 449.19,
+      "latency_p99_ms": 1454.33,
+      "req_per_sec": 45.98,
+      "non2xx": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "title": "login",
+          "latency_avg_ms": 573.89,
+          "latency_p99_ms": 2331,
+          "req_per_sec": 34.67,
+          "non2xx": 0,
+          "errors": 0
+        },
+        {
+          "title": "login",
+          "latency_avg_ms": 393.07,
+          "latency_p99_ms": 944,
+          "req_per_sec": 50.8,
+          "non2xx": 0,
+          "errors": 0
+        },
+        {
+          "title": "login",
+          "latency_avg_ms": 380.61,
+          "latency_p99_ms": 1088,
+          "req_per_sec": 52.47,
+          "non2xx": 0,
+          "errors": 0
+        }
+      ]
+    },
+    {
+      "title": "product_list",
+      "repeat": 3,
+      "latency_avg_ms": 181.87,
+      "latency_p99_ms": 798.67,
+      "req_per_sec": 109.67,
+      "non2xx": 0,
+      "errors": 0,
+      "runs": [
+        {
+          "title": "product_list",
+          "latency_avg_ms": 180.07,
+          "latency_p99_ms": 797,
+          "req_per_sec": 110.74,
+          "non2xx": 0,
+          "errors": 0
+        },
+        {
+          "title": "product_list",
+          "latency_avg_ms": 182.31,
+          "latency_p99_ms": 796,
+          "req_per_sec": 109.54,
+          "non2xx": 0,
+          "errors": 0
+        },
+        {
+          "title": "product_list",
+          "latency_avg_ms": 183.22,
+          "latency_p99_ms": 803,
+          "req_per_sec": 108.74,
+          "non2xx": 0,
+          "errors": 0
+        }
+      ]
+    }
+  ]
+}

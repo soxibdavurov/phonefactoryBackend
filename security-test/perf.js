@@ -32,12 +32,11 @@ async function ensurePerfUser() {
   }
 }
 
-// 중요: autocannon은 전체 URL로 호출한다 (별도의 `path` 옵션은
-// autocannon이 무시하여 요청이 `/`로 가서 404가 된다).
-function bench(title, pathStr, opts) {
+function bench(title, opts) {
   return new Promise((resolve, reject) => {
     autocannon(
-      { url: BASE + pathStr, connections: 20, duration: 15, ...opts },
+      // 주의: autocannon은 최상위 "path" 옵션을 무시하므로 전체 URL을 전달한다
+      { connections: 20, duration: 15, ...opts },
       (err, res) => {
         if (err) return reject(err);
         resolve({
@@ -45,24 +44,44 @@ function bench(title, pathStr, opts) {
           latency_avg_ms: res.latency.average,
           latency_p99_ms: res.latency.p99,
           req_per_sec: res.requests.average,
-          non2xx: res.non2xx,          // 404/4xx/5xx 개수 — 0이어야 함 (login/signup의 429는 예외)
-          errors: res.errors,          // 연결 오류
-          status_2xx: res["2xx"],
+          non2xx: res.non2xx,
+          errors: res.errors,
         });
       }
     );
   });
 }
 
+// 원격 DB(Atlas)로 인해 측정값 변동이 크므로 각 테스트를 REPEAT회 반복하여 평균을 사용한다
+const REPEAT = Number(process.env.REPEAT || 3);
+const round2 = (x) => Math.round(x * 100) / 100;
+
+async function benchRepeated(title, opts) {
+  const runs = [];
+  for (let i = 0; i < REPEAT; i++) runs.push(await bench(title, opts));
+  const mean = (k) => round2(runs.reduce((s, r) => s + r[k], 0) / runs.length);
+  return {
+    title,
+    repeat: REPEAT,
+    latency_avg_ms: mean("latency_avg_ms"),
+    latency_p99_ms: mean("latency_p99_ms"),
+    req_per_sec: mean("req_per_sec"),
+    non2xx: runs.reduce((s, r) => s + r.non2xx, 0),
+    errors: runs.reduce((s, r) => s + r.errors, 0),
+    runs,
+  };
+}
+
 async function main() {
   const out = { mode: MODE, generatedAt: new Date().toISOString(), benchmarks: [] };
 
-  // 올바른 비밀번호 계정 준비 (로그인 성공 = rate-limit 미차단)
+  // 올바른 비밀번호 계정 준비 (로그인이 성공해야 함)
   await ensurePerfUser();
 
   // 로그인 API (유효 계정 — bcrypt 비교 포함, 두 모드 동일 경로)
   out.benchmarks.push(
-    await bench("login", "/member/login", {
+    await benchRepeated("login", {
+      url: BASE + "/member/login",
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({
@@ -74,7 +93,8 @@ async function main() {
 
   // 상품 목록 조회 (읽기 경로)
   out.benchmarks.push(
-    await bench("product_list", "/product/all?page=1&limit=10&order=createdAt", {
+    await benchRepeated("product_list", {
+      url: BASE + "/product/all?page=1&limit=10&order=createdAt",
       method: "GET",
     })
   );
@@ -83,8 +103,9 @@ async function main() {
   console.log(`\n[${MODE}] 성능 결과: ${OUT}`);
   for (const b of out.benchmarks) {
     console.log(
-      `  ${b.title.padEnd(14)} avg=${b.latency_avg_ms}ms p99=${b.latency_p99_ms}ms rps=${Math.round(b.req_per_sec)} 2xx=${b.status_2xx} non2xx=${b.non2xx} errors=${b.errors}`
+      `  ${b.title.padEnd(14)} avg=${b.latency_avg_ms}ms p99=${b.latency_p99_ms}ms rps=${Math.round(b.req_per_sec)} non2xx=${b.non2xx} errors=${b.errors}`
     );
+    if (b.non2xx || b.errors) console.log(`  !! ${b.title}: 오류 응답 존재 — 이 측정값은 신뢰할 수 없음`);
   }
 }
 
